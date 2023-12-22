@@ -299,6 +299,18 @@ local function draw(real_width, real_height)
 end
 
 function node.render()
-    -- TODO implement rotation
-    draw(NATIVE_WIDTH, NATIVE_HEIGHT)
+    if rotate_before ~= CONFIG.screen_rotation then
+        transform = util.screen_transform(CONFIG.screen_rotation)
+        rotate_before = CONFIG.screen_rotation
+    end
+
+    if rotate_before == 90 or rotate_before == 270 then
+        real_width = NATIVE_HEIGHT
+        real_height = NATIVE_WIDTH
+    else
+        real_width = NATIVE_WIDTH
+        real_height = NATIVE_HEIGHT
+    end
+    transform()
+    draw(real_width, real_height)
 end
