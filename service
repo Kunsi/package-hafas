@@ -57,6 +57,7 @@ class HAFASDeparture:
                 self.symbol = product["line"]
                 self.category = product["catCode"]
                 self.operator = product.get("operatorCode", None)
+                self.icon = product.get("icon", None)
                 break
         else:
             self.symbol = ""
@@ -110,12 +111,18 @@ class HAFASDeparture:
                 r, g, b = COLOUR_MAPPING[provider][self.operator].get(
                     self.symbol, (0.1, 0.1, 0.1)
                 )
+                h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
+                if v > 0.75:
+                    font_r, font_g, font_b = (0, 0, 0)
+            elif self.icon is not None:
+                r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
+                font_r, font_g, font_b = Helper.hex2rgb(self.icon["foregroundColor"]["hex"][1:])
             else:
                 name_hash = md5(self.json["name"]).hexdigest()
                 r, g, b = Helper.hex2rgb(name_hash[:6])
-            h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
-            if v > 0.75:
-                font_r, font_g, font_b = (0, 0, 0)
+                h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
+                if v > 0.75:
+                    font_r, font_g, font_b = (0, 0, 0)
         return {
             "background_colour": {
                 "r": r,
