@@ -31,5 +31,12 @@ class Helper:
         return r, g, b
 
     @staticmethod
+    def int2rgb(ri, gi, bi):
+        rf = round(1.0 / 255 * ri, 2)
+        gf = round(1.0 / 255 * gi, 2)
+        bf = round(1.0 / 255 * bi, 2)
+        return rf, gf, bf
+
+    @staticmethod
     def to_unixtimestamp(dt):
         return int(mktime(dt.timetuple()))
