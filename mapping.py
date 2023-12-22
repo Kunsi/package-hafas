@@ -1,7 +1,7 @@
-from mapping_rmv import MAPPING_RMV
+from mapping_vbb import MAPPING_VBB
 
 COLOUR_MAPPING = {
-    "rmv": MAPPING_RMV,
+    "vbb-test": MAPPING_VBB,
 }
 
 API_MAPPING = {
