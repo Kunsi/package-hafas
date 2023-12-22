@@ -53,8 +53,8 @@ class HAFASDeparture:
         self.follow = None
 
         for product in departure["Product"]:
-            if product.get("line") and product.get("catCode"):
-                self.symbol = product["line"]
+            if product.get("name") and product.get("catCode"):
+                self.symbol = product["name"]
                 self.category = product["catCode"]
                 self.operator = product.get("operatorCode", None)
                 self.icon = product.get("icon", None)
