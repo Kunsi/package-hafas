@@ -21,6 +21,7 @@ CATEGORY_MAPPING = {
     },
     "vbb-test": {
         "0": "s_bahn",
+        "1": "u_bahn",
         "2": "tram",
         "3": "bus",
         "6": "low_speed_rail",
