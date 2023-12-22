@@ -73,7 +73,7 @@ local function draw(real_width, real_height)
 
             if remaining < 0 then
                 time = "In der Vergangenheit"
-                if dep.next_timestamp then
+                if dep.next_timestamp > 10 then
                     append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
                 end
             elseif remaining < 1 then
@@ -82,17 +82,17 @@ local function draw(real_width, real_height)
                 else
                     time = "jetzt*"
                 end
-                if dep.next_timestamp then
+                if dep.next_timestamp > 10 then
                     append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
                 end
             elseif remaining < 11 then
                 time = string.format("in %d min", ((dep.timestamp - now)/60))
-                if dep.next_timestamp then
+                if dep.next_timestamp > 10 then
                     append = "und wieder " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min später"
                 end
             else
                 time = time -- .. " +" .. remaining
-                if dep.next_time then
+                if dep.next_time and dep.next_timestamp > 10 then
                     append = "und wieder " .. dep.next_time
                 end
             end
