@@ -108,11 +108,17 @@ class HAFASDeparture:
             r, g, b = (0.3, 0.3, 0.3)
         else:
             provider = CONFIG["api_provider"]
-            if provider in COLOUR_MAPPING and self.operator in COLOUR_MAPPING[provider] and self.symbol in COLOUR_MAPPING[provider][self.operator]:
+            if (
+                provider in COLOUR_MAPPING
+                and self.operator in COLOUR_MAPPING[provider]
+                and self.symbol in COLOUR_MAPPING[provider][self.operator]
+            ):
                 r, g, b = COLOUR_MAPPING[provider][self.operator][self.symbol]
             elif self.icon is not None:
                 r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
-                font_r, font_g, font_b = Helper.hex2rgb(self.icon["foregroundColor"]["hex"][1:])
+                font_r, font_g, font_b = Helper.hex2rgb(
+                    self.icon["foregroundColor"]["hex"][1:]
+                )
             else:
                 name_hash = md5(self.json["name"]).hexdigest()
                 r, g, b = Helper.hex2rgb(name_hash[:6])
