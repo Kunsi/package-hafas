@@ -63,6 +63,7 @@ class HAFASDeparture:
             self.symbol = ""
             self.category = -1
             self.operator = None
+            self.icon = None
 
         if CONFIG["api_provider"] in CATEGORY_MAPPING:
             self.category_icon = CATEGORY_MAPPING[CONFIG["api_provider"]].get(
