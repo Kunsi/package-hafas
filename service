@@ -107,10 +107,8 @@ class HAFASDeparture:
             r, g, b = (0.3, 0.3, 0.3)
         else:
             provider = CONFIG["api_provider"]
-            if provider in COLOUR_MAPPING and self.operator in COLOUR_MAPPING[provider]:
-                r, g, b = COLOUR_MAPPING[provider][self.operator].get(
-                    self.symbol, (0.1, 0.1, 0.1)
-                )
+            if provider in COLOUR_MAPPING and self.operator in COLOUR_MAPPING[provider] and self.symbol in COLOUR_MAPPING[provider][self.operator]:
+                r, g, b = COLOUR_MAPPING[provider][self.operator][self.symbol]
                 h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
                 if v > 0.75:
                     font_r, font_g, font_b = (0, 0, 0)
