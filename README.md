@@ -4,7 +4,7 @@
 
 This package allows you to display a HAFAS powered departure board.
 
-[![Import](https://cdn.infobeamer.com/s/img/import.png)](https://info-beamer.com/use?url=https://github.com/kunsi/package-hafas.git)
+[![Import](https://cdn.infobeamer.com/s/img/import.png)](https://info-beamer.com/use?url=https://github.com/kunsi/package-hafas.git%23main)
 
 
 ## Caching
