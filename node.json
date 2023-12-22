@@ -1,0 +1,126 @@
+{
+    "name": "Live feed",
+    "permissions": {
+        "network": "Needs to fetch rmv live info"
+    },
+    "options": [{
+        "title": "OpenData API",
+        "type": "section",
+        "ui_width": 12
+    }, {
+        "title": "Provider",
+        "ui_width": 4,
+        "name": "api_provider",
+        "type": "select",
+        "default": "vbb-test",
+        "options": [
+            ["vbb-test", "VBB test (Verkehrsverbund Berlin-Brandenburg)"],
+            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"]
+        ]
+    }, {
+        "title": "API-Key oder Cache-URL",
+        "ui_width": 8,
+        "name": "api_key",
+        "type": "string",
+        "default": "",
+        "placeholder": "5555555-555555-5555-5555-555555"
+    }, {
+        "title": "HAFAS stop id(s)",
+        "ui_width": 8,
+        "name": "stop_ids",
+        "type": "string",
+        "default": "3016471",
+        "hint": "separate multiple ids by comma"
+    }, {
+        "title": "Request Limit",
+        "ui_width": 4,
+        "name": "requests_max_per_day",
+        "type": "integer",
+        "default": 4900,
+        "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server"
+    }, {
+        "title": "Display Options",
+        "type": "section",
+        "ui_width": 12
+    }, {
+        "title": "Remove string from destination",
+        "ui_width": 12,
+        "name": "remove_string",
+        "type": "string",
+        "default": "",
+        "hint": "String which is removed from stop names and destinations"
+    }, {
+        "title": "Ignored destinations",
+        "ui_width": 12,
+        "name": "ignore_destination",
+        "type": "string",
+        "default": "",
+        "hint": "Filter out any transport where destination matches (matched after 'remove string from destination' - regex possible)"
+    }, {
+        "title": "Rotation",
+        "ui_width": 4,
+        "name": "screen_rotation",
+        "type": "select",
+        "default": 0,
+        "hint": "Rotation of screen (clockwise)",
+        "options": [
+            [0, "0°"],
+            [90, "90°"],
+            [180, "180°"],
+            [270, "270°"]
+        ]
+    }, {
+        "title": "Show vehicle type",
+        "ui_width": 4,
+        "name": "show_vehicle_type",
+        "type": "boolean",
+        "default": true
+    }, {
+        "title": "Large Minutes",
+        "ui_width": 4,
+        "name": "large_minutes",
+        "type": "boolean",
+        "default": false,
+        "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
+    }, {
+        "title": "Coloured lines",
+        "ui_width": 4,
+        "name": "coloured_lines",
+        "type": "boolean",
+        "default": true,
+        "hint": "if deselected, lines will appear as grey box with white text"
+    }, {
+        "title": "Hours to request",
+        "ui_width": 4,
+        "name": "request_hours",
+        "type": "integer",
+        "default": 3,
+        "hint": "how many hours of fahrplan to show"
+    }, {
+        "title": "Time Offset in minutes",
+        "ui_width": 4,
+        "name": "offset",
+        "type": "integer",
+        "default": 0,
+        "hint": "offset to use when displaying departures (does „early fadeout“ to account for walking time to stop)"
+    }, {
+        "title": "Background",
+        "ui_width": 4,
+        "name": "background_color",
+        "type": "color",
+        "default": [0,0,0,1]
+    }, {
+        "title": "Font",
+        "ui_width": 6,
+        "name": "font",
+        "type": "font",
+        "default": "silkscreen.ttf"
+    }, {
+        "default": 150,
+        "hint": "Height of one 'departure in less than 10 minutes' line, departures further in the future will use 66% of that",
+        "name": "line_height",
+        "title": "Line Height",
+        "ui_width": 6,
+        "type": "integer"
+    }]
+}

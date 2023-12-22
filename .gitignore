@@ -1,0 +1,8 @@
+departures.json
+config.json
+*.xml
+*.pyc
+.venv
+*.swp
+#*.ttf
+*.TTF

@@ -1,0 +1,17 @@
+{
+    "api_provider": "vbb-test",
+    "api_key": "foobar",
+    "requests_max_per_day": 1000,
+    "stop_ids": "900170004",
+    "request_hours": 3,
+    "remove_string": "",
+    "ignore_destination": "",
+    "screen_rotation": 0,
+    "show_vehicle_type": true,
+    "large_minutes": true,
+    "coloured_lines": true,
+    "offset": 0,
+    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0},
+    "font":{"asset_name": "silkscreen.ttf"},
+    "line_height": 70
+}
