@@ -221,6 +221,7 @@ class HAFASFetcher:
                 "category": dep.category,
                 "direction": dep.destination,
                 "icon": dep.category_icon,
+                "operator": dep.operator,
                 "platform": dep.platform,
                 "stop": dep.stop,
                 "symbol": dep.symbol,
