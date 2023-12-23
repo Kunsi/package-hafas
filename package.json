@@ -1,5 +1,14 @@
 {
     "name": "HAFAS Abfahrtsplan",
-    "author": "kunsi (forked from sophie, lara, dividuum)",
-    "desc": "Generic HAFAS departure monitor"
+    "author": "kunsi, multi (forked from sophie, lara, dividuum)",
+    "desc": "Generic HAFAS departure monitor (using REST API)",
+    "nesting": {
+        "parents": ["top-level"],
+        "childs": []
+    },
+    "platforms": ["pi/epoch-1", "pi/epoch-2"],
+    "offline": {
+        "support": "no",
+        "info": "Needs to fetch departures from HAFAS API endpoint"
+    }
 }
