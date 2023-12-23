@@ -14,6 +14,8 @@ class HAFASEvent:
         self.duplicate = False
         self.follow = None
 
+        self.id = data["JourneyDetailRef"]["ref"]
+
         for product in data["Product"]:
             if product.get("name") and product.get("catCode"):
                 self.symbol = product["name"]
@@ -63,7 +65,17 @@ class HAFASEvent:
 
     @property
     def destination(self):
-        return self._clean("direction")
+        if "direction" in self.json:
+            return self._clean("direction")
+        else:
+            return None
+
+    @property
+    def origin(self):
+        if "origin" in self.json:
+            return self._clean("origin")
+        else:
+            return None
 
     @property
     def ignore_event(self):

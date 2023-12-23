@@ -71,6 +71,14 @@ local function draw(real_width, real_height)
             local platform = ""
             local x = 0
 
+            local heading = dep.direction
+            local preposition = "von"
+
+            if not dep.departure then
+               heading = "Ankunft von " .. dep.direction
+               preposition = "an"
+            end
+
             if remaining < 0 then
                 time = "In der Vergangenheit"
                 if dep.next_timestamp > 10 then
@@ -98,13 +106,13 @@ local function draw(real_width, real_height)
             end
 
             if string.match(CONFIG.stop_ids, ',') then
-                platform = "von " .. dep.stop
+                platform = preposition .. " " .. dep.stop
                 if dep.platform ~= "" then
                     platform = platform .. ", " .. dep.platform
                 end
             else
                 if dep.platform ~= "" then
-                    platform = "von " .. dep.platform
+                    platform = preposition .. " " .. dep.platform
                 end
             end
             if remaining < 11 then
@@ -165,7 +173,7 @@ local function draw(real_width, real_height)
                 CONFIG.font:write(
                     x + 170,
                     text_y,
-                    dep.direction,
+                    heading,
                     text_upper_size,
                     1, 1, 1, 1
                 )
@@ -274,7 +282,7 @@ local function draw(real_width, real_height)
                 CONFIG.font:write(
                     x,
                     text_y,
-                    dep.direction,
+                    heading,
                     text_upper_size,
                     1, 1, 1,1
                 )
