@@ -15,8 +15,8 @@ request limit. To circumvent this, you can use the included
 `cache_runner.py` script.
 
 The script will read a standard `config.json`, with the additional
-undocumented option of setting a specific `outdir` to put the json
-files somewhere else.
+undocumented option of setting a specific `output_directory` to put the
+json files somewhere else.
 
 In info-beamer just input the path to the cached json files. Authentication
 is not supported as of now.
