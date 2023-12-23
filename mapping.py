@@ -24,6 +24,7 @@ CATEGORY_MAPPING = {
         "1": "u_bahn",
         "2": "tram",
         "3": "bus",
+        "5": "high_speed_rail",
         "6": "low_speed_rail",
     },
 }
