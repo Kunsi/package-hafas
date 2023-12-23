@@ -107,5 +107,5 @@ class HAFASFetcher:
             }
             departure.update(dep.line_colour)
             out.append(departure)
-        with file("departures.json", "wb") as f:
+        with file("events.json", "wb") as f:
             f.write(json.dumps(out, ensure_ascii=False).encode("utf8"))

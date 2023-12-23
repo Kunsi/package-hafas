@@ -1,14 +1,14 @@
 util.init_hosted()
 
 local json = require "json"
-local departures = {}
+local events = {}
 local rotate_before = nil
 local transform = nil
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-util.file_watch("departures.json", function(content)
-    departures = json.decode(content)
+util.file_watch("events.json", function(content)
+    events = json.decode(content)
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
@@ -50,7 +50,7 @@ local function draw(real_width, real_height)
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
 
-    for idx, dep in ipairs(departures) do
+    for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if now_for_fade > dep.timestamp then
                 y = (y - line_height - margin_bottom) / fadeout * (now_for_fade - dep.timestamp)
@@ -58,7 +58,7 @@ local function draw(real_width, real_height)
         end
     end
 
-    for idx, dep in ipairs(departures) do
+    for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if y < 0 and dep.timestamp >= now_for_fade then
                 y = 0
@@ -257,7 +257,7 @@ local function draw(real_width, real_height)
                 end
                 x = x + 110
 
-                -- time of departure
+                -- time of event
                 local space_for_time = icon_size * 3.5
                 local time_width = CONFIG.font:width(time, icon_size)
                 CONFIG.font:write(
