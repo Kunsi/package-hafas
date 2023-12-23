@@ -4,6 +4,7 @@
     "requests_max_per_day": 1000,
     "stop_ids": "900170004",
     "request_hours": 3,
+    "data_sources": "departures",
     "remove_string": "",
     "ignore_destination": "",
     "screen_rotation": 0,

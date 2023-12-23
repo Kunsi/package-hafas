@@ -26,7 +26,7 @@
         "placeholder": "5555555-555555-5555-5555-555555"
     }, {
         "title": "HAFAS stop id(s)",
-        "ui_width": 8,
+        "ui_width": 4,
         "name": "stop_ids",
         "type": "string",
         "default": "3016471",
@@ -38,6 +38,17 @@
         "type": "integer",
         "default": 4900,
         "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server"
+    }, {
+        "title": "API Data sources",
+        "ui_width": 4,
+        "name": "data_sources",
+        "type": "select",
+        "default": "departures",
+        "options": [
+            ["departures", "Show only departures at each stop"],
+            ["arrivals", "Show only arrivals at each stop"],
+            ["both", "Show departures and terminating arrivals at each stop"]
+        ]
     }, {
         "title": "Display Options",
         "type": "section",
