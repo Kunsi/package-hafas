@@ -144,7 +144,11 @@ class HAFASDeparture:
 
     @property
     def platform(self):
-        return self.json["track"] if "track" in self.json else ""
+        if "platform" in self.json:
+            return "{} {}".format(self.json["platform"].get("type", ""), self.json["platform"].get("text", "")).strip()
+        if "track" in self.json:
+            return self.json["track"]
+        return ""
 
 
 class HAFASFetcher:
