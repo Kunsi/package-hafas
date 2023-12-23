@@ -89,9 +89,22 @@ class HAFASDeparture:
         assert isinstance(other, HAFASDeparture)
         return self.departure < other.departure
 
+    def _clean(self, key):
+        return re.sub(
+            "^(" + REMOVE + "[- ])",
+            "",
+            re.sub(
+                "(\(" + REMOVE + "\))$",
+                "",
+                self.json[key].strip(),
+                flags=re.IGNORECASE
+            ),
+            flags=re.IGNORECASE,
+        ).strip()
+
     @property
     def destination(self):
-        return re.sub("^(" + REMOVE + "[- ])", "", self.json["direction"])
+        return self._clean("direction")
 
     @property
     def ignore_departure(self):
@@ -140,7 +153,7 @@ class HAFASDeparture:
 
     @property
     def stop(self):
-        return re.sub("^(" + REMOVE + "[- ])", "", self.json["stop"])
+        return self._clean("stop")
 
     @property
     def platform(self):
