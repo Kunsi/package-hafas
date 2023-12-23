@@ -1,7 +1,7 @@
 {
     "name": "Live feed",
     "permissions": {
-        "network": "Needs to fetch rmv live info"
+        "network": "Needs to fetch HAFAS API data"
     },
     "options": [{
         "title": "OpenData API",
