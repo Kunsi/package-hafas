@@ -100,7 +100,7 @@ local function draw(real_width, real_height)
             if string.match(CONFIG.stop_ids, ',') then
                 platform = "von " .. dep.stop
                 if dep.platform ~= "" then
-                    platform = platform .. " " .. dep.platform
+                    platform = platform .. ", " .. dep.platform
                 end
             else
                 if dep.platform ~= "" then
