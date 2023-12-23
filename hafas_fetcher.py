@@ -40,6 +40,7 @@ class HAFASFetcher:
             )
         else:
             url = API_MAPPING[CONFIG["api_provider"]].format(
+                endpoint="departureBoard",
                 stop=stop_id,
                 minutes=CONFIG["request_hours"] * 60,
                 key=key,

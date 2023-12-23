@@ -5,8 +5,8 @@ COLOUR_MAPPING = {
 }
 
 API_MAPPING = {
-    "rmv": "https://www.rmv.de/hapi/departureBoard?id={stop}&duration={minutes}&format=json&accessId={key}",
-    "vbb-test": "https://vbb.demo.hafas.de/fahrinfo/restproxy/2.32/departureBoard?id={stop}&duration={minutes}&format=json&accessId={key}",
+    "rmv": "https://www.rmv.de/hapi/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
+    "vbb-test": "https://vbb.demo.hafas.de/fahrinfo/restproxy/2.32/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
 }
 
 CATEGORY_MAPPING = {
