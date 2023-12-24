@@ -30,28 +30,46 @@ LIMIT = int(CONFIG.get("requests_max_per_day", 4900))
 MINUTES = CONFIG.get("request_hours", 6) * 60
 OUTDIR = CONFIG.get("output_directory", abspath(dirname(__file__)))
 PROVIDER = CONFIG["api_provider"]
+DATASOURCES = CONFIG.get("data_sources", "departures")
+
+fetch_departures = not (DATASOURCES == "arrivals")
+fetch_arrivals = not (DATASOURCES == "departures")
+
+
+def fetch_stop(stop, endpoint):
+    r = get(
+        API_MAPPING[PROVIDER].format(
+            endpoint=endpoint,
+            stop=stop,
+            minutes=MINUTES,
+            key=KEY,
+        )
+    )
+    r.raise_for_status()
+    return r.json()
+
 
 while True:
     for stop in STOPS:
+        data = {}
+
         try:
-            r = get(
-                API_MAPPING[PROVIDER].format(
-                    stop=stop,
-                    minutes=MINUTES,
-                    key=KEY,
-                )
-            )
-            r.raise_for_status()
+            if fetch_departures:
+                payload = fetch_stop(stop, "departureBoard")
+                data["Departure"] = payload["Departure"]
+            if fetch_arrivals:
+                payload = fetch_stop(stop, "arrivalBoard")
+                data["Arrival"] = payload["Arrival"]
         except RequestException as e:
             logging.exception("[{}] {}".format(stop, repr(e)))
         else:
             logging.info("[{}] fetched successfully".format(stop))
 
             with open(join(OUTDIR, "{}.json".format(stop)), "w") as f:
-                dump(r.json(), f, indent=4)
+                dump(data, f, indent=4)
 
-    number_of_stops = len(STOPS)
-    sleep_time = 86400 / (LIMIT / number_of_stops)
+    number_of_requests = len(STOPS) * (int(fetch_departures) + int(fetch_arrivals))
+    sleep_time = 86400 / (LIMIT / number_of_requests)
 
     if sleep_time < 30:
         sleep_time = 30

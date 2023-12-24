@@ -1,4 +1,11 @@
+from sys import stderr
 from time import mktime
+
+
+def log(something):
+    if not isinstance(something, str):
+        something = repr(something)
+    stderr.write("[HAFAS service] {}\n".format(something))
 
 
 class Helper:

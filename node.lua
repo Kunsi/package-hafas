@@ -1,14 +1,14 @@
 util.init_hosted()
 
 local json = require "json"
-local departures = {}
+local events = {}
 local rotate_before = nil
 local transform = nil
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-util.file_watch("departures.json", function(content)
-    departures = json.decode(content)
+util.file_watch("events.json", function(content)
+    events = json.decode(content)
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
@@ -50,7 +50,7 @@ local function draw(real_width, real_height)
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
 
-    for idx, dep in ipairs(departures) do
+    for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if now_for_fade > dep.timestamp then
                 y = (y - line_height - margin_bottom) / fadeout * (now_for_fade - dep.timestamp)
@@ -58,7 +58,7 @@ local function draw(real_width, real_height)
         end
     end
 
-    for idx, dep in ipairs(departures) do
+    for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if y < 0 and dep.timestamp >= now_for_fade then
                 y = 0
@@ -70,6 +70,14 @@ local function draw(real_width, real_height)
             local append = ""
             local platform = ""
             local x = 0
+
+            local heading = dep.direction
+            local preposition = "von"
+
+            if not dep.departure then
+               heading = "Ankunft von " .. dep.direction
+               preposition = "an"
+            end
 
             if remaining < 0 then
                 time = "In der Vergangenheit"
@@ -98,13 +106,13 @@ local function draw(real_width, real_height)
             end
 
             if string.match(CONFIG.stop_ids, ',') then
-                platform = "von " .. dep.stop
+                platform = preposition .. " " .. dep.stop
                 if dep.platform ~= "" then
                     platform = platform .. ", " .. dep.platform
                 end
             else
                 if dep.platform ~= "" then
-                    platform = "von " .. dep.platform
+                    platform = preposition .. " " .. dep.platform
                 end
             end
             if remaining < 11 then
@@ -165,7 +173,7 @@ local function draw(real_width, real_height)
                 CONFIG.font:write(
                     x + 170,
                     text_y,
-                    dep.direction,
+                    heading,
                     text_upper_size,
                     1, 1, 1, 1
                 )
@@ -257,7 +265,7 @@ local function draw(real_width, real_height)
                 end
                 x = x + 110
 
-                -- time of departure
+                -- time of event
                 local space_for_time = icon_size * 3.5
                 local time_width = CONFIG.font:width(time, icon_size)
                 CONFIG.font:write(
@@ -274,7 +282,7 @@ local function draw(real_width, real_height)
                 CONFIG.font:write(
                     x,
                     text_y,
-                    dep.direction,
+                    heading,
                     text_upper_size,
                     1, 1, 1,1
                 )
