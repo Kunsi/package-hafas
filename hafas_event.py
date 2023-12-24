@@ -54,28 +54,28 @@ class HAFASEvent:
         return self.realtime < other.realtime
 
     def _clean(self, key):
-        return re.sub(
-            "^(" + REMOVE + "[- ])",
-            "",
-            re.sub(
-                "(\(" + REMOVE + "\))$", "", self.json[key].strip(), flags=re.IGNORECASE
-            ),
-            flags=re.IGNORECASE,
-        ).strip()
+        if key not in self.json:
+            return None
+        else:
+            return re.sub(
+                "^(" + REMOVE + "[- ])",
+                "",
+                re.sub(
+                    "(\(" + REMOVE + "\))$",
+                    "",
+                    self.json[key].strip(),
+                    flags=re.IGNORECASE,
+                ),
+                flags=re.IGNORECASE,
+            ).strip()
 
     @property
     def destination(self):
-        if "direction" in self.json:
-            return self._clean("direction")
-        else:
-            return None
+        return self._clean("direction")
 
     @property
     def origin(self):
-        if "origin" in self.json:
-            return self._clean("origin")
-        else:
-            return None
+        return self._clean("origin")
 
     @property
     def ignore_event(self):
