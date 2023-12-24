@@ -76,9 +76,10 @@ class HAFASFetcher:
             )
 
             payload = self._fetch_url(stop_id, url)
-            for label in ["Departure", "Arrival"]:
-                if label in payload:
-                    data[label] = payload[label]
+            if not self.data_sources == "arrivals":
+                data["Departure"] = payload["Departure"]
+            if not self.data_sources == "departures":
+                data["Arrival"] = payload["Arrival"]
         else:
             url = lambda ep: API_MAPPING[CONFIG["api_provider"]].format(
                 endpoint=ep,
