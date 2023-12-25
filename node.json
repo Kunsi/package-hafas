@@ -61,6 +61,19 @@
         "default": [1,1,1,1],
         "ui_spacing": 3
     }, {
+        "title": "Second Line Font",
+        "ui_width": 6,
+        "name": "second_font",
+        "type": "font",
+        "default": "silkscreen.ttf"
+    }, {
+        "title": "Second Line Colour",
+        "ui_width": 3,
+        "name": "second_colour",
+        "type": "color",
+        "default": [1,1,1,1],
+        "ui_spacing": 3
+    }, {
         "title": "Time Font",
         "ui_width": 6,
         "name": "time_font",
@@ -74,18 +87,26 @@
         "default": [1,1,1,1],
         "ui_spacing": 3
     }, {
-        "title": "Second Line Font",
+        "title": "Real-Time Font",
         "ui_width": 6,
-        "name": "second_font",
+        "name": "realtime_font",
         "type": "font",
-        "default": "silkscreen.ttf"
+        "default": "silkscreen.ttf",
+        "hint": "Font to use for times when real-time information is available"
     }, {
-        "title": "Second Line Colour",
+        "title": "Real-Time Colour (on time)",
         "ui_width": 3,
-        "name": "second_colour",
+        "name": "realtime_punctual_colour",
         "type": "color",
         "default": [1,1,1,1],
-        "ui_spacing": 3
+        "hint": "Colour to use for times where real-time information is available and the service is on-time"
+    }, {
+        "title": "Real-Time Colour (delayed)",
+        "ui_width": 3,
+        "name": "realtime_delayed_colour",
+        "type": "color",
+        "default": [1,1,1,1],
+        "hint": "Colour to use for times where real-time information is available and the service is delayed"
     }, {
         "title": "Background Colour",
         "ui_width": 4,

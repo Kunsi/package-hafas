@@ -161,6 +161,7 @@ class HAFASFetcher:
                 "next_time": dep.follow.realtime.strftime("%H:%M")
                 if dep.follow
                 else "",
+                "delay": dep.delay,
             }
             departure.update(dep.line_colour)
             out.append(departure)

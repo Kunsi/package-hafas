@@ -70,6 +70,7 @@ local function draw(real_width, real_height)
             end
 
             local time = dep.time
+            local time_font = CONFIG.time_font
 
             local remaining = math.floor((dep.timestamp - now) / 60)
             local append = ""
@@ -127,6 +128,17 @@ local function draw(real_width, real_height)
                 ir, ig, ib  = dep.background_colour.r, dep.background_colour.g, dep.background_colour.b
                 ifr,ifg,ifb = dep.font_colour.r, dep.font_colour.g, dep.font_colour.b
             end
+
+            local time_colour = CONFIG.time_colour
+            if dep.delay >= 0 then
+               time_font = CONFIG.realtime_font
+               time_colour = CONFIG.realtime_punctual_colour
+               if dep.delay > 0 then
+                  time_colour = CONFIG.realtime_delayed_colour
+               end
+            end
+            local tr, tg, tb = time_colour.r, time_colour.g, time_colour.b
+
             if remaining < 11 then
                 icon_size = line_height * 0.66
                 text_upper_size = line_height * 0.5
@@ -195,17 +207,15 @@ local function draw(real_width, real_height)
                 )
                 local text_width = CONFIG.second_font:width(platform .. " " .. append, text_lower_size)
                 if CONFIG.large_minutes then
-                    local time_width = CONFIG.time_font:width(time, text_upper_size)
+                    local time_width = time_font:width(time, text_upper_size)
                     local append_width = CONFIG.second_font:width(append, text_lower_size)
 
-                    CONFIG.time_font:write(
+                    time_font:write(
                         real_width - time_width,
                         text_y, time, text_upper_size,
-                        CONFIG.time_colour.r,
-                        CONFIG.time_colour.g,
-                        CONFIG.time_colour.b,
-                        CONFIG.time_colour.a
+                        tr, tg, tb, 1
                     )
+
                     text_y = text_y + text_upper_size
                     if platform ~= "" then
                         CONFIG.second_font:write(
@@ -230,17 +240,14 @@ local function draw(real_width, real_height)
                         CONFIG.second_colour.a
                     )
                 else
-                    local time_width = CONFIG.time_font:width(time, text_lower_size)
+                    local time_width = time_font:width(time, text_lower_size)
                     local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
 
                     text_y = text_y + text_upper_size
-                    CONFIG.time_font:write(
+                    time_font:write(
                         x + 170,
                         text_y, time, text_lower_size,
-                        CONFIG.time_colour.r,
-                        CONFIG.time_colour.g,
-                        CONFIG.time_colour.b,
-                        CONFIG.time_colour.a
+                        tr, tg, tb, 1
                     )
                     CONFIG.second_font:write(
                         x + 170 + time_width + time_after_width,
@@ -316,16 +323,13 @@ local function draw(real_width, real_height)
 
                 -- time of event
                 local space_for_time = icon_size * 3.5
-                local time_width = CONFIG.time_font:width(time, icon_size)
-                CONFIG.time_font:write(
+                local time_width = time_font:width(time, icon_size)
+                time_font:write(
                     x + (space_for_time - time_width) / 2,
                     y + ((symbol_height - icon_size) / 2),
                     time,
                     icon_size,
-                    CONFIG.time_colour.r,
-                    CONFIG.time_colour.g,
-                    CONFIG.time_colour.b,
-                    CONFIG.time_colour.a
+                    tr, tg, tb, 1
                 )
                 x = x + space_for_time + 10
 

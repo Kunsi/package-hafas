@@ -47,7 +47,7 @@ class HAFASEvent:
             self.delay = int(diff.total_seconds() / 60)
         else:
             self.realtime = scheduled
-            self.delay = 0
+            self.delay = -1
 
     def __lt__(self, other):
         assert isinstance(other, HAFASEvent)
@@ -60,7 +60,7 @@ class HAFASEvent:
             for possible_match in (
                 "^(" + REMOVE + "[, -]+)",
                 "( *\(" + REMOVE + "\))",
-                "(" + REMOVE + " +)"
+                "(" + REMOVE + " +)",
             ):
                 if re.search(possible_match, self.json[key].strip()):
                     return re.sub(
