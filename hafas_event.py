@@ -89,7 +89,6 @@ class HAFASEvent:
 
     @property
     def line_colour(self):
-        font_r, font_g, font_b = (1, 1, 1)
         provider = CONFIG["api_provider"]
 
         if (
@@ -97,7 +96,7 @@ class HAFASEvent:
             and self.operator in COLOUR_MAPPING[provider]
             and self.symbol in COLOUR_MAPPING[provider][self.operator]
         ):
-            r, g, b = COLOUR_MAPPING[provider][self.operator][self.symbol]
+            (r,g,b), (font_r,font_g,font_b) =  COLOUR_MAPPING[provider][self.operator][self.symbol]
         elif self.icon is not None:
             r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
             font_r, font_g, font_b = Helper.hex2rgb(
@@ -109,6 +108,8 @@ class HAFASEvent:
             h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
             if v > 0.75:
                 font_r, font_g, font_b = (0, 0, 0)
+            else:
+                font_r, font_g, font_b = (1, 1, 1)
         return {
             "background_colour": {
                 "r": r,
