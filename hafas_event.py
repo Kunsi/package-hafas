@@ -90,27 +90,25 @@ class HAFASEvent:
     @property
     def line_colour(self):
         font_r, font_g, font_b = (1, 1, 1)
-        if not CONFIG["coloured_lines"]:
-            r, g, b = (0.3, 0.3, 0.3)
+        provider = CONFIG["api_provider"]
+
+        if (
+            provider in COLOUR_MAPPING
+            and self.operator in COLOUR_MAPPING[provider]
+            and self.symbol in COLOUR_MAPPING[provider][self.operator]
+        ):
+            r, g, b = COLOUR_MAPPING[provider][self.operator][self.symbol]
+        elif self.icon is not None:
+            r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
+            font_r, font_g, font_b = Helper.hex2rgb(
+                self.icon["foregroundColor"]["hex"][1:]
+            )
         else:
-            provider = CONFIG["api_provider"]
-            if (
-                provider in COLOUR_MAPPING
-                and self.operator in COLOUR_MAPPING[provider]
-                and self.symbol in COLOUR_MAPPING[provider][self.operator]
-            ):
-                r, g, b = COLOUR_MAPPING[provider][self.operator][self.symbol]
-            elif self.icon is not None:
-                r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
-                font_r, font_g, font_b = Helper.hex2rgb(
-                    self.icon["foregroundColor"]["hex"][1:]
-                )
-            else:
-                name_hash = md5(self.json["name"]).hexdigest()
-                r, g, b = Helper.hex2rgb(name_hash[:6])
-                h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
-                if v > 0.75:
-                    font_r, font_g, font_b = (0, 0, 0)
+            name_hash = md5(self.json["name"]).hexdigest()
+            r, g, b = Helper.hex2rgb(name_hash[:6])
+            h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
+            if v > 0.75:
+                font_r, font_g, font_b = (0, 0, 0)
         return {
             "background_colour": {
                 "r": r,

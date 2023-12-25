@@ -120,6 +120,13 @@ local function draw(real_width, real_height)
                     platform = preposition .. " " .. dep.platform
                 end
             end
+
+            local ir, ig, ib  = 0.3,0.3,0.3
+            local ifr,ifg,ifb = 1,  1,  1
+            if CONFIG.coloured_lines then
+                ir, ig, ib  = dep.background_colour.r, dep.background_colour.g, dep.background_colour.b
+                ifr,ifg,ifb = dep.font_colour.r, dep.font_colour.g, dep.font_colour.b
+            end
             if remaining < 11 then
                 icon_size = line_height * 0.66
                 text_upper_size = line_height * 0.5
@@ -138,9 +145,9 @@ local function draw(real_width, real_height)
                 end
 
                 colored:use{color = {
-                    dep.background_colour.r,
-                    dep.background_colour.g,
-                    dep.background_colour.b,
+                    ir,
+                    ig,
+                    ib,
                     1,
                 }}
                 white:draw(
@@ -157,7 +164,7 @@ local function draw(real_width, real_height)
                         y + symbol_margin_top,
                         dep.symbol,
                         icon_size,
-                        dep.font_colour.r, dep.font_colour.g, dep.font_colour.b, 1
+                        ifr,ifg,ifb,1
                     )
                 else
                     size = icon_size
@@ -171,7 +178,8 @@ local function draw(real_width, real_height)
                         y + symbol_margin_top,
                         dep.symbol,
                         size,
-                        dep.font_colour.r, dep.font_colour.g, dep.font_colour.b,1)
+                        ifr,ifg,ifb,1
+                    )
                 end
 
                 text_y = y + (margin_bottom * 0.5)
@@ -268,9 +276,9 @@ local function draw(real_width, real_height)
 
                 -- line number
                 colored:use{color = {
-                    dep.background_colour.r,
-                    dep.background_colour.g,
-                    dep.background_colour.b,
+                    ir,
+                    ig,
+                    ib,
                     1
                 }}
                 white:draw(
@@ -287,7 +295,7 @@ local function draw(real_width, real_height)
                         y + symbol_margin_top,
                         dep.symbol,
                         icon_size,
-                        dep.font_colour.r, dep.font_colour.g, dep.font_colour.b, 1
+                        ifr,ifg,ifb,1
                     )
                 else
                     size = icon_size
@@ -301,7 +309,7 @@ local function draw(real_width, real_height)
                         y+symbol_margin_top,
                         dep.symbol,
                         size,
-                        dep.font_colour.r, dep.font_colour.g, dep.font_colour.b, 1
+                        ifr,ifg,ifb,1
                     )
                 end
                 x = x + 110
