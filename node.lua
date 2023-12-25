@@ -184,7 +184,7 @@ local function draw(real_width, real_height)
                 )
                 if CONFIG.large_minutes then
                     local time_width = CONFIG.font:width(time, text_upper_size)
-                    local text_width = CONFIG.font:width(platform .. " " .. append, text_lower_size)
+                    local append_width = CONFIG.font:width(append, text_lower_size)
 
                     CONFIG.font:write(
                         real_width - time_width,
@@ -192,10 +192,19 @@ local function draw(real_width, real_height)
                         1, 1, 1, 1
                     )
                     text_y = text_y + text_upper_size
+                    if platform ~= "" then
+                        CONFIG.font:write(
+                            x + 170,
+                            text_y,
+                            platform,
+                            text_lower_size,
+                            1,1,1,1
+                        )
+                    end
                     CONFIG.font:write(
-                        real_width - text_width,
+                        real_width - append_width,
                         text_y,
-                        platform .. " " .. append,
+                        append,
                         text_lower_size,
                         1,1,1,1
                     )
