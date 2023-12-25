@@ -41,7 +41,7 @@ categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
 local function draw(real_width, real_height)
-    CONFIG.background_color.clear()
+    CONFIG.background_colour.clear()
     local now = unixnow()
     local y = 0
     local now_for_fade = now + (CONFIG.offset * 60)

@@ -89,7 +89,7 @@
     }, {
         "title": "Background Colour",
         "ui_width": 4,
-        "name": "background_color",
+        "name": "background_colour",
         "type": "color",
         "default": [0,0,0,1]
     }, {
