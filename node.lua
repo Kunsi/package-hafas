@@ -45,6 +45,8 @@ local function draw(real_width, real_height)
     local now = unixnow()
     local y = 0
     local now_for_fade = now + (CONFIG.offset * 60)
+    local stops = {}
+    local number_of_stops = 0
 
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
@@ -55,6 +57,10 @@ local function draw(real_width, real_height)
                 y = (y - line_height - margin_bottom) / fadeout * (now_for_fade - dep.timestamp)
             end
         end
+        if not stops[dep.stop] then
+            number_of_stops = number_of_stops + 1
+        end
+        stops[dep.stop] = true
     end
 
     for idx, dep in ipairs(events) do
@@ -104,7 +110,7 @@ local function draw(real_width, real_height)
                 end
             end
 
-            if string.match(CONFIG.stop_ids, ',') then
+            if number_of_stops > 1 then
                 platform = preposition .. " " .. dep.stop
                 if dep.platform ~= "" then
                     platform = platform .. ", " .. dep.platform
