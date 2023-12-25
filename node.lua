@@ -1,14 +1,13 @@
 util.init_hosted()
 
-local json = require "json"
 local events = {}
 local rotate_before = nil
 local transform = nil
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
-util.file_watch("events.json", function(content)
-    events = json.decode(content)
+util.json_watch("events.json", function(content)
+    events = content
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
