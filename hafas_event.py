@@ -62,7 +62,7 @@ class HAFASEvent:
                 "( *\(" + REMOVE + "\))",
                 "(" + REMOVE + " +)"
             ):
-                if re.match(possible_match, self.json[key].strip()):
+                if re.search(possible_match, self.json[key].strip()):
                     return re.sub(
                         possible_match,
                         "",
