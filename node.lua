@@ -149,10 +149,10 @@ local function draw(real_width, real_height)
                 )
                 colored:deactivate()
 
-                local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
+                local symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
                 if symbol_width < 150 then
                     symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(
+                    CONFIG.line_font:write(
                         x + 75 - symbol_width/2,
                         y + symbol_margin_top,
                         dep.symbol,
@@ -161,12 +161,12 @@ local function draw(real_width, real_height)
                     )
                 else
                     size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 145 do
+                    while CONFIG.line_font:width(dep.symbol, size) > 145 do
                         size = size - 2
                     end
                     symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(
+                    symbol_width = CONFIG.line_font:width(dep.symbol, size)
+                    CONFIG.line_font:write(
                         x + 75 - symbol_width/2,
                         y + symbol_margin_top,
                         dep.symbol,
@@ -175,47 +175,74 @@ local function draw(real_width, real_height)
                 end
 
                 text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(
+                CONFIG.heading_font:write(
                     x + 170,
                     text_y,
                     heading,
                     text_upper_size,
-                    1, 1, 1, 1
+                    CONFIG.heading_colour.r,
+                    CONFIG.heading_colour.g,
+                    CONFIG.heading_colour.b,
+                    CONFIG.heading_colour.a
                 )
+                local text_width = CONFIG.second_font:width(platform .. " " .. append, text_lower_size)
                 if CONFIG.large_minutes then
-                    local time_width = CONFIG.font:width(time, text_upper_size)
-                    local append_width = CONFIG.font:width(append, text_lower_size)
+                    local time_width = CONFIG.time_font:width(time, text_upper_size)
+                    local append_width = CONFIG.second_font:width(append, text_lower_size)
 
-                    CONFIG.font:write(
+                    CONFIG.time_font:write(
                         real_width - time_width,
                         text_y, time, text_upper_size,
-                        1, 1, 1, 1
+                        CONFIG.time_colour.r,
+                        CONFIG.time_colour.g,
+                        CONFIG.time_colour.b,
+                        CONFIG.time_colour.a
                     )
                     text_y = text_y + text_upper_size
                     if platform ~= "" then
-                        CONFIG.font:write(
+                        CONFIG.second_font:write(
                             x + 170,
                             text_y,
                             platform,
                             text_lower_size,
-                            1,1,1,1
+                            CONFIG.second_colour.r,
+                            CONFIG.second_colour.g,
+                            CONFIG.second_colour.b,
+                            CONFIG.second_colour.a
                         )
                     end
-                    CONFIG.font:write(
+                    CONFIG.second_font:write(
                         real_width - append_width,
                         text_y,
                         append,
                         text_lower_size,
-                        1,1,1,1
+                        CONFIG.second_colour.r,
+                        CONFIG.second_colour.g,
+                        CONFIG.second_colour.b,
+                        CONFIG.second_colour.a
                     )
                 else
+                    local time_width = CONFIG.time_font:width(time, text_lower_size)
+                    local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
+
                     text_y = text_y + text_upper_size
-                    CONFIG.font:write(
+                    CONFIG.time_font:write(
                         x + 170,
+                        text_y, time, text_lower_size,
+                        CONFIG.time_colour.r,
+                        CONFIG.time_colour.g,
+                        CONFIG.time_colour.b,
+                        CONFIG.time_colour.a
+                    )
+                    CONFIG.second_font:write(
+                        x + 170 + time_width + time_after_width,
                         text_y,
-                        time .. " " .. platform .. " " .. append,
+                        platform .. " " .. append,
                         text_lower_size,
-                        1,1,1,1
+                        CONFIG.second_colour.r,
+                        CONFIG.second_colour.g,
+                        CONFIG.second_colour.b,
+                        CONFIG.second_colour.a
                     )
                 end
             else
@@ -252,10 +279,10 @@ local function draw(real_width, real_height)
                 )
                 colored:deactivate()
 
-                local symbol_width = CONFIG.font:width(dep.symbol, icon_size)
+                local symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
                 if symbol_width < 100 then
                     symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.font:write(
+                    CONFIG.line_font:write(
                         x + 50 - symbol_width/2,
                         y + symbol_margin_top,
                         dep.symbol,
@@ -264,12 +291,12 @@ local function draw(real_width, real_height)
                     )
                 else
                     size = icon_size
-                    while CONFIG.font:width(dep.symbol, size) > 95 do
+                    while CONFIG.line_font:width(dep.symbol, size) > 95 do
                         size = size - 2
                     end
                     symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.font:width(dep.symbol, size)
-                    CONFIG.font:write(
+                    symbol_width = CONFIG.line_font:width(dep.symbol, size)
+                    CONFIG.line_font:write(
                         x + 50 - symbol_width/2,
                         y+symbol_margin_top,
                         dep.symbol,
@@ -281,33 +308,42 @@ local function draw(real_width, real_height)
 
                 -- time of event
                 local space_for_time = icon_size * 3.5
-                local time_width = CONFIG.font:width(time, icon_size)
-                CONFIG.font:write(
+                local time_width = CONFIG.time_font:width(time, icon_size)
+                CONFIG.time_font:write(
                     x + (space_for_time - time_width) / 2,
                     y + ((symbol_height - icon_size) / 2),
                     time,
                     icon_size,
-                    1,1,1,1
+                    CONFIG.time_colour.r,
+                    CONFIG.time_colour.g,
+                    CONFIG.time_colour.b,
+                    CONFIG.time_colour.a
                 )
                 x = x + space_for_time + 10
 
                 -- destination and follow-up information
                 text_y = y + (margin_bottom * 0.5)
-                CONFIG.font:write(
+                CONFIG.heading_font:write(
                     x,
                     text_y,
                     heading,
                     text_upper_size,
-                    1, 1, 1,1
+                    CONFIG.heading_colour.r,
+                    CONFIG.heading_colour.g,
+                    CONFIG.heading_colour.b,
+                    CONFIG.heading_colour.a
                 )
 
                 text_y = text_y + text_upper_size
-                CONFIG.font:write(
+                CONFIG.second_font:write(
                     x,
                     text_y,
                     platform .. " " .. append,
                     text_lower_size,
-                    1, 1, 1, 1
+                    CONFIG.second_colour.r,
+                    CONFIG.second_colour.g,
+                    CONFIG.second_colour.b,
+                    CONFIG.second_colour.a
                 )
             end
 
