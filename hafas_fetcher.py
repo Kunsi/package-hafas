@@ -111,7 +111,7 @@ class HAFASFetcher:
                                 Helper.to_unixtimestamp(ev.realtime)
                                 - Helper.to_unixtimestamp(follow.realtime)
                             )
-                            < 120
+                            <= 120
                         )
                         or (
                             ev.stop == follow.stop
@@ -119,11 +119,11 @@ class HAFASFetcher:
                                 Helper.to_unixtimestamp(ev.realtime)
                                 - Helper.to_unixtimestamp(follow.realtime)
                             )
-                            < 10
+                            <= 10
                         )
                     )
                 ):
-                    ev.duplicate = True
+                    follow.duplicate = True
                     break
         return [ev for ev in events if not ev.duplicate]
 
