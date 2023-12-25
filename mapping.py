@@ -30,3 +30,9 @@ CATEGORY_MAPPING = {
         "6": "low_speed_rail",
     },
 }
+
+OPERATOR_LABEL_MAPPING = {
+    'rmv': {
+        '^(Bus )': '',
+    },
+}

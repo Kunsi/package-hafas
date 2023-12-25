@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from helper import Helper
 from hosted import CONFIG
-from mapping import CATEGORY_MAPPING, COLOUR_MAPPING
+from mapping import CATEGORY_MAPPING, COLOUR_MAPPING, OPERATOR_LABEL_MAPPING
 
 REMOVE = re.escape(CONFIG["remove_string"].strip())
 
@@ -18,10 +18,14 @@ class HAFASEvent:
 
         for product in data["Product"]:
             if product.get("name") and product.get("catCode"):
-                self.symbol = product["name"]
                 self.category = product["catCode"]
                 self.operator = product.get("operatorCode", None)
                 self.icon = product.get("icon", None)
+
+                symbol = product["name"]
+                for regex, replacement in OPERATOR_LABEL_MAPPING.get(CONFIG["api_provider"], {}).items():
+                    symbol = re.sub(regex, replacement, symbol)
+                self.symbol = symbol
                 break
         else:
             self.symbol = ""
@@ -96,7 +100,7 @@ class HAFASEvent:
             and self.operator in COLOUR_MAPPING[provider]
             and self.symbol in COLOUR_MAPPING[provider][self.operator]
         ):
-            (r,g,b), (font_r,font_g,font_b) =  COLOUR_MAPPING[provider][self.operator][self.symbol]
+            (r,g,b), (font_r,font_g,font_b) = COLOUR_MAPPING[provider][self.operator][self.symbol]
         elif self.icon is not None:
             r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
             font_r, font_g, font_b = Helper.hex2rgb(
