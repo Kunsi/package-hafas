@@ -12,7 +12,13 @@
     "large_minutes": true,
     "coloured_lines": true,
     "offset": 0,
-    "background_color": {"r": 0, "g": 0, "b": 0, "a": 0},
-    "font":{"asset_name": "silkscreen.ttf"},
-    "line_height": 70
+    "line_height": 70,
+    "line_font":{"asset_name": "silkscreen.ttf"},
+    "heading_font":{"asset_name": "silkscreen.ttf"},
+    "heading_colour": {"r": 1, "g": 1, "b": 1, "a": 1},
+    "time_font":{"asset_name": "silkscreen.ttf"},
+    "time_colour": {"r": 1, "g": 1, "b": 1, "a": 1},
+    "time_font":{"asset_name": "silkscreen.ttf"},
+    "time_colour": {"r": 1, "g": 1, "b": 1, "a": 1},
+    "background_colour": {"r": 0, "g": 0, "b": 0, "a": 1}
 }
