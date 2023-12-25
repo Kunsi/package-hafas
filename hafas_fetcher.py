@@ -125,7 +125,9 @@ class HAFASFetcher:
                 ):
                     follow.duplicate = True
                     break
-        return [ev for ev in events if not ev.duplicate]
+        events = [ev for ev in events if not ev.duplicate]
+        events = [ev for ev in events if not ev.ignore_destination]
+        return events
 
     def sort_and_deduplicate(self):
         self.departures = self._sort_and_deduplicate(

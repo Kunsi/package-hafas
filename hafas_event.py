@@ -86,9 +86,9 @@ class HAFASEvent:
         return self._clean("origin")
 
     @property
-    def ignore_event(self):
-        if CONFIG["ignore_destination"] and re.match(
-            CONFIG["ignore_destination"], self.destination
+    def ignore_destination(self):
+        if CONFIG["ignore_destination"] and self.destination and re.search(
+            CONFIG["ignore_destination"], self.destination, flags=re.IGNORECASE
         ):
             return True
         return False
