@@ -57,17 +57,19 @@ class HAFASEvent:
         if key not in self.json:
             return None
         else:
-            return re.sub(
-                "^(" + REMOVE + "[- ])",
-                "",
-                re.sub(
-                    "(\(" + REMOVE + "\))$",
-                    "",
-                    self.json[key].strip(),
-                    flags=re.IGNORECASE,
-                ),
-                flags=re.IGNORECASE,
-            ).strip()
+            for possible_match in (
+                "^(" + REMOVE + "[, -]+)",
+                "( *\(" + REMOVE + "\))",
+                "(" + REMOVE + " +)"
+            ):
+                if re.match(possible_match, self.json[key].strip()):
+                    return re.sub(
+                        possible_match,
+                        "",
+                        self.json[key].strip(),
+                        flags=re.IGNORECASE,
+                    ).strip()
+            return self.json[key].strip()
 
     @property
     def destination(self):
