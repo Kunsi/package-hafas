@@ -23,7 +23,9 @@ class HAFASEvent:
                 self.icon = product.get("icon", None)
 
                 symbol = product["name"]
-                for regex, replacement in OPERATOR_LABEL_MAPPING.get(CONFIG["api_provider"], {}).items():
+                for regex, replacement in OPERATOR_LABEL_MAPPING.get(
+                    CONFIG["api_provider"], {}
+                ).items():
                     symbol = re.sub(regex, replacement, symbol)
                 self.symbol = symbol
                 break
@@ -100,7 +102,9 @@ class HAFASEvent:
             and self.operator in COLOUR_MAPPING[provider]
             and self.symbol in COLOUR_MAPPING[provider][self.operator]
         ):
-            (r,g,b), (font_r,font_g,font_b) = COLOUR_MAPPING[provider][self.operator][self.symbol]
+            (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][
+                self.operator
+            ][self.symbol]
         elif self.icon is not None:
             r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
             font_r, font_g, font_b = Helper.hex2rgb(

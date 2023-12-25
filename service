@@ -51,7 +51,7 @@ def main():
                 idle(15)
             else:
                 requests_per_stop = 2 if data_sources == "both" else 1
-                requests_count = len(stops) * requests_per_stop
+                request_count = len(stops) * requests_per_stop
                 sleep_time = max(
                     86400 / (CONFIG["requests_max_per_day"] / request_count),
                     30,

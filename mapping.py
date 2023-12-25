@@ -32,7 +32,7 @@ CATEGORY_MAPPING = {
 }
 
 OPERATOR_LABEL_MAPPING = {
-    'rmv': {
-        '^(Bus )': '',
+    "rmv": {
+        "^(Bus )": "",
     },
 }
