@@ -27,7 +27,7 @@ class HAFASFetcher:
             for follow in islice(departures, n + 1, None):
                 if dep.symbol == follow.symbol and (
                     (dep.platform != "" and dep.platform == follow.platform)
-                    or (dep.platform == "" and dep.destination == follow.destination)
+                    or dep.destination == follow.destination
                 ):
                     dep.follow = follow
                     break
