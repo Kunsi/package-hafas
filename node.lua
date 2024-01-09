@@ -99,7 +99,7 @@ local function draw(real_width, real_height)
                 if dep.next_timestamp > 10 then
                     append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
                 end
-            elseif remaining < 11 then
+            elseif remaining < (11 + CONFIG.offset) then
                 time = string.format("in %d min", ((dep.timestamp - now)/60))
                 if dep.next_timestamp > 10 then
                     append = "und wieder " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min später"
