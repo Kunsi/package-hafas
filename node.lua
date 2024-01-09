@@ -139,7 +139,7 @@ local function draw(real_width, real_height)
             end
             local tr, tg, tb = time_colour.r, time_colour.g, time_colour.b
 
-            if remaining < 11 then
+            if remaining < (11 + CONFIG.offset) then
                 icon_size = line_height * 0.66
                 text_upper_size = line_height * 0.5
                 text_lower_size = line_height * 0.3
