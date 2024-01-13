@@ -109,7 +109,7 @@ local function draw(real_width, real_height)
                     end
                 end
                 if dep.next_timestamp > 10 then
-                    append = "und wieder " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min später"
+                    append = "auch in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
                 end
             else
                 if dep.next_time and dep.next_timestamp > 10 then
