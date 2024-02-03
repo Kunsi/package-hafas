@@ -146,24 +146,24 @@ class HAFASFetcher:
         for dep in self.events:
             departure = {
                 "category": dep.category,
+                "delay": dep.delay,
                 "departure": dep.destination is not None,
                 "direction": dep.destination
                 if dep.destination is not None
                 else dep.origin,
                 "icon": dep.category_icon,
+                "next_time": dep.follow.realtime.strftime("%H:%M")
+                if dep.follow
+                else "",
+                "next_timestamp": Helper.to_unixtimestamp(dep.follow.realtime)
+                if dep.follow
+                else 0,
                 "operator": dep.operator,
                 "platform": dep.platform,
                 "stop": dep.stop,
                 "symbol": dep.symbol,
                 "time": dep.realtime.strftime("%H:%M"),
                 "timestamp": Helper.to_unixtimestamp(dep.realtime),
-                "next_timestamp": Helper.to_unixtimestamp(dep.follow.realtime)
-                if dep.follow
-                else 0,
-                "next_time": dep.follow.realtime.strftime("%H:%M")
-                if dep.follow
-                else "",
-                "delay": dep.delay,
             }
             departure.update(dep.line_colour)
             out.append(departure)
