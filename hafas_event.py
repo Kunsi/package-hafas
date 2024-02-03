@@ -137,6 +137,18 @@ class HAFASEvent:
         }
 
     @property
+    def notes(self):
+        notes = []
+        for note in self.json["Notes"]["Note"]:
+            # Apparently:
+            # A: Accessibility Information
+            # I: Internal Stuff
+            # R: Travel information ("fällt aus" etc.)
+            if note["type"] == "R":
+                notes.append(note["value"])
+        return notes
+
+    @property
     def stop(self):
         return self._clean("stop")
 
