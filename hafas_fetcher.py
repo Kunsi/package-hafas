@@ -158,6 +158,7 @@ class HAFASFetcher:
                 "next_timestamp": (
                     Helper.to_unixtimestamp(dep.follow.realtime) if dep.follow else 0
                 ),
+                "notes": dep.notes,
                 "operator": dep.operator,
                 "platform": dep.platform,
                 "stop": dep.stop,
