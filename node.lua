@@ -1,8 +1,11 @@
+local api = ...
+
 util.init_hosted()
 
 local events = {}
 local rotate_before = nil
 local transform = nil
+local scroll_position = {}
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
@@ -22,6 +25,24 @@ util.data_mapper{
 
 local function unixnow()
     return base_time + sys.now()
+end
+
+local function scrolling_text(id, x1, y1, x2, y2, text, font, r, g, b, a)
+    local font_size = y2 - y1
+    local text_width = font:width(text, font_size)
+    if not scroll_position[id] then
+        -- start all the way to the right
+        scroll_position[id] = sys.now()
+    end
+    local scroll_position_by_time = math_floor((sys.now() - scroll_position[id])*10)
+    if x1 - text_width < x2 - scroll_position_by_time then
+        -- text scrolled out to the left. restart at the right then.
+        scroll_position[id] = sys.now()
+        scroll_position_by_time = 0
+    end
+    api.screen.set_scissor(x1, y1, x2, y2)
+    font:write(x2 - scroll_position_by_time, y1, text, font_size, r, g, b, a)
+    api.screen.set_scissor()
 end
 
 local colored = resource.create_shader[[
@@ -151,6 +172,10 @@ local function draw(real_width, real_height)
                 text_lower_size = line_height * 0.3
                 symbol_height = text_upper_size + text_lower_size + margin_bottom
 
+                if dep.notes =~ json.null then
+                    symbol_height = symbol_height + text_lower_size
+                end
+
                 if CONFIG.show_vehicle_type then
                     if categories[dep.icon] then
                         icon_y = y + ( symbol_height - icon_size ) / 2
@@ -266,12 +291,28 @@ local function draw(real_width, real_height)
                         CONFIG.second_colour.a
                     )
                 end
+                if dep.notes =~ json.null then
+                    scrolling_text(
+                        x + 170, text_y,
+                        real_width, text_y + text_lower_size,
+                        table.concat(dep.notes, "  |  "),
+                        CONFIG.second_font,
+                        CONFIG.second_colour.r,
+                        CONFIG.second_colour.g,
+                        CONFIG.second_colour.b,
+                        CONFIG.second_colour.a,
+                    )
+                end
             else
                 this_line_height = line_height * 0.8
                 icon_size = this_line_height * 0.66
                 text_upper_size = this_line_height * 0.5
                 text_lower_size = this_line_height * 0.3
                 symbol_height = text_upper_size + text_lower_size + margin_bottom
+
+                if dep.notes =~ json.null then
+                    symbol_height = symbol_height + text_lower_size
+                end
 
                 x = 0
 
@@ -363,6 +404,18 @@ local function draw(real_width, real_height)
                     CONFIG.second_colour.b,
                     CONFIG.second_colour.a
                 )
+                if dep.notes =~ json.null then
+                    scrolling_text(
+                        x, text_y,
+                        real_width, text_y + text_lower_size,
+                        table.concat(dep.notes, "  |  "),
+                        CONFIG.second_font,
+                        CONFIG.second_colour.r,
+                        CONFIG.second_colour.g,
+                        CONFIG.second_colour.b,
+                        CONFIG.second_colour.a,
+                    )
+                end
             end
 
             y = y + symbol_height + margin_bottom
