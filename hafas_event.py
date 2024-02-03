@@ -147,7 +147,9 @@ class HAFASEvent:
             # R: Travel information ("fällt aus" etc.)
             if note["type"] == "R":
                 notes.append(note["value"])
-        return notes
+        if notes:
+            return notes
+        return None
 
     @property
     def stop(self):
