@@ -152,6 +152,7 @@ class HAFASFetcher:
                     dep.destination if dep.destination is not None else dep.origin
                 ),
                 "icon": dep.category_icon,
+                "id": dep.id,
                 "next_time": (
                     dep.follow.realtime.strftime("%H:%M") if dep.follow else ""
                 ),
