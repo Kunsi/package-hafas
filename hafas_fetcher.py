@@ -148,16 +148,16 @@ class HAFASFetcher:
                 "category": dep.category,
                 "delay": dep.delay,
                 "departure": dep.destination is not None,
-                "direction": dep.destination
-                if dep.destination is not None
-                else dep.origin,
+                "direction": (
+                    dep.destination if dep.destination is not None else dep.origin
+                ),
                 "icon": dep.category_icon,
-                "next_time": dep.follow.realtime.strftime("%H:%M")
-                if dep.follow
-                else "",
-                "next_timestamp": Helper.to_unixtimestamp(dep.follow.realtime)
-                if dep.follow
-                else 0,
+                "next_time": (
+                    dep.follow.realtime.strftime("%H:%M") if dep.follow else ""
+                ),
+                "next_timestamp": (
+                    Helper.to_unixtimestamp(dep.follow.realtime) if dep.follow else 0
+                ),
                 "operator": dep.operator,
                 "platform": dep.platform,
                 "stop": dep.stop,

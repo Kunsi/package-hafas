@@ -87,8 +87,12 @@ class HAFASEvent:
 
     @property
     def ignore_destination(self):
-        if CONFIG["ignore_destination"] and self.destination and re.search(
-            CONFIG["ignore_destination"], self.destination, flags=re.IGNORECASE
+        if (
+            CONFIG["ignore_destination"]
+            and self.destination
+            and re.search(
+                CONFIG["ignore_destination"], self.destination, flags=re.IGNORECASE
+            )
         ):
             return True
         return False
@@ -105,10 +109,7 @@ class HAFASEvent:
             (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][
                 self.operator
             ][self.symbol]
-        elif (
-            provider in COLOUR_MAPPING
-            and self.symbol in COLOUR_MAPPING[provider]
-        ):
+        elif provider in COLOUR_MAPPING and self.symbol in COLOUR_MAPPING[provider]:
             (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][self.symbol]
         elif self.icon is not None:
             r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
