@@ -1,8 +1,11 @@
+local json = require "json"
+
 util.init_hosted()
 
 local events = {}
 local rotate_before = nil
 local transform = nil
+local scroll_position = {}
 
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
@@ -11,6 +14,12 @@ util.json_watch("events.json", function(content)
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
+local bg = resource.create_colored_texture(
+    CONFIG.background_colour.r,
+    CONFIG.background_colour.g,
+    CONFIG.background_colour.b,
+    1
+)
 local base_time = N.base_time or 0
 
 util.data_mapper{
@@ -22,6 +31,28 @@ util.data_mapper{
 
 local function unixnow()
     return base_time + sys.now()
+end
+
+local function scrolling_text(id, x1, y1, x2, y2, text, font, r, g, b, a)
+    local font_size = y2 - y1
+    local text_width = font:width(text, font_size)
+    if x2 - x1 > text_width then
+        font:write(x1, y1, text, font_size, r, g, b, a)
+        return
+    end
+    if not scroll_position[id] then
+        -- start all the way to the right
+        scroll_position[id] = sys.now()
+    end
+    local scroll_position_by_time = math.floor((sys.now() - scroll_position[id])*25)
+    if x1 - text_width > x2 - scroll_position_by_time then
+        -- text scrolled out to the left. restart at the right then.
+        scroll_position[id] = sys.now()
+        scroll_position_by_time = 0
+    end
+    font:write(x2 - scroll_position_by_time, y1, text, font_size, r, g, b, a)
+    bg:draw(x1 - text_width, y1-2, x1, y2+2)
+    bg:draw(x2, y1-2, x2 + text_width, y2+2)
 end
 
 local colored = resource.create_shader[[
@@ -41,7 +72,12 @@ categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
 local function draw(real_width, real_height)
-    CONFIG.background_colour.clear()
+    gl.clear(
+        CONFIG.background_colour.r,
+        CONFIG.background_colour.g,
+        CONFIG.background_colour.b,
+        1
+    )
     local now = unixnow()
     local y = 0
     local now_for_fade = now + (CONFIG.offset * 60)
@@ -109,7 +145,7 @@ local function draw(real_width, real_height)
                     end
                 end
                 if dep.next_timestamp > 10 then
-                    append = "auch in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
+                    append = "und danach in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
                 end
             else
                 if dep.next_time and dep.next_timestamp > 10 then
@@ -145,216 +181,150 @@ local function draw(real_width, real_height)
             end
             local tr, tg, tb = time_colour.r, time_colour.g, time_colour.b
 
-            if remaining < (11 + CONFIG.offset) then
-                icon_size = line_height * 0.66
-                text_upper_size = line_height * 0.5
-                text_lower_size = line_height * 0.3
-                symbol_height = text_upper_size + text_lower_size + margin_bottom
+            local icon_size = line_height * 0.66
+            local text_upper_size = line_height * 0.5
+            local text_lower_size = line_height * 0.3
+            local symbol_height = text_upper_size + text_lower_size + margin_bottom
+            local symbol_width = 150
 
-                if CONFIG.show_vehicle_type then
-                    if categories[dep.icon] then
-                        icon_y = y + ( symbol_height - icon_size ) / 2
-                        categories[dep.icon]:draw(
-                            0, icon_y,
-                            icon_size, icon_y+icon_size
-                        )
-                    end
-                    x = icon_size + 20
-                end
+            if remaining > (10 + CONFIG.offset) then
+                icon_size = icon_size * 0.8
+                text_upper_size = text_upper_size * 0.8
+                text_lower_size = text_lower_size * 0.8
+                symbol_height = symbol_height * 0.8
+                symbol_width = 100
+            end
 
-                colored:use{color = {
-                    ir,
-                    ig,
-                    ib,
-                    1,
-                }}
-                white:draw(
-                    x, y,
-                    x + 150, y + symbol_height
+            local x = 0
+            local text_x = symbol_width + 20
+            local text_y = y + (margin_bottom * 0.5)
+
+            if CONFIG.show_vehicle_type then
+                text_x = text_x + icon_size + 20
+            end
+
+            -- third line (if exists)
+            -- needs to go first, because we use the background colour
+            -- to hide the text outside the view area
+            if dep.notes ~= json.null then
+                -- increase symbol height to account for scrolling text
+                symbol_height = symbol_height + text_lower_size
+
+                -- place text
+                local scroller_y = text_y + text_upper_size + text_lower_size
+                scrolling_text(
+                    dep.id,
+                    text_x, scroller_y,
+                    math.min(real_width, text_x + (real_width/2)), scroller_y + text_lower_size,
+                    dep.notes,
+                    CONFIG.second_font,
+                    CONFIG.second_colour.r,
+                    CONFIG.second_colour.g,
+                    CONFIG.second_colour.b,
+                    CONFIG.second_colour.a
                 )
-                colored:deactivate()
+            end
 
-                local symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
-                if symbol_width < 150 then
-                    symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.line_font:write(
-                        x + 75 - symbol_width/2,
-                        y + symbol_margin_top,
-                        dep.symbol,
-                        icon_size,
-                        ifr,ifg,ifb,1
-                    )
-                else
-                    size = icon_size
-                    while CONFIG.line_font:width(dep.symbol, size) > 145 do
-                        size = size - 2
-                    end
-                    symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.line_font:width(dep.symbol, size)
-                    CONFIG.line_font:write(
-                        x + 75 - symbol_width/2,
-                        y + symbol_margin_top,
-                        dep.symbol,
-                        size,
-                        ifr,ifg,ifb,1
+            -- vehicle type
+            if CONFIG.show_vehicle_type then
+                if categories[dep.icon] then
+                    local icon_y = y + ( symbol_height - icon_size ) / 2
+                    categories[dep.icon]:draw(
+                        0, icon_y,
+                        icon_size, icon_y+icon_size
                     )
                 end
+                x = icon_size + 20
+            end
 
-                text_y = y + (margin_bottom * 0.5)
-                CONFIG.heading_font:write(
-                    x + 170,
-                    text_y,
-                    heading,
-                    text_upper_size,
-                    CONFIG.heading_colour.r,
-                    CONFIG.heading_colour.g,
-                    CONFIG.heading_colour.b,
-                    CONFIG.heading_colour.a
-                )
-                local text_width = CONFIG.second_font:width(platform .. " " .. append, text_lower_size)
-                if CONFIG.large_minutes then
-                    local time_width = time_font:width(time, text_upper_size)
-                    local append_width = CONFIG.second_font:width(append, text_lower_size)
-
-                    time_font:write(
-                        real_width - time_width,
-                        text_y, time, text_upper_size,
-                        tr, tg, tb, 1
-                    )
-
-                    text_y = text_y + text_upper_size
-                    if platform ~= "" then
-                        CONFIG.second_font:write(
-                            x + 170,
-                            text_y,
-                            platform,
-                            text_lower_size,
-                            CONFIG.second_colour.r,
-                            CONFIG.second_colour.g,
-                            CONFIG.second_colour.b,
-                            CONFIG.second_colour.a
-                        )
-                    end
-                    CONFIG.second_font:write(
-                        real_width - append_width,
-                        text_y,
-                        append,
-                        text_lower_size,
-                        CONFIG.second_colour.r,
-                        CONFIG.second_colour.g,
-                        CONFIG.second_colour.b,
-                        CONFIG.second_colour.a
-                    )
-                else
-                    local time_width = time_font:width(time, text_lower_size)
-                    local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
-
-                    text_y = text_y + text_upper_size
-                    time_font:write(
-                        x + 170,
-                        text_y, time, text_lower_size,
-                        tr, tg, tb, 1
-                    )
-                    CONFIG.second_font:write(
-                        x + 170 + time_width + time_after_width,
-                        text_y,
-                        platform .. " " .. append,
-                        text_lower_size,
-                        CONFIG.second_colour.r,
-                        CONFIG.second_colour.g,
-                        CONFIG.second_colour.b,
-                        CONFIG.second_colour.a
-                    )
+            -- line number
+            colored:use{color = {
+                ir,
+                ig,
+                ib,
+                1,
+            }}
+            white:draw(
+                x, y,
+                x + symbol_width, y + symbol_height
+            )
+            colored:deactivate()
+            local actual_symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
+            local symbol_font_size = icon_size
+            if actual_symbol_width > symbol_width then
+                while CONFIG.line_font:width(dep.symbol, symbol_font_size) > symbol_width do
+                    symbol_font_size = symbol_font_size - 1
                 end
-            else
-                this_line_height = line_height * 0.8
-                icon_size = this_line_height * 0.66
-                text_upper_size = this_line_height * 0.5
-                text_lower_size = this_line_height * 0.3
-                symbol_height = text_upper_size + text_lower_size + margin_bottom
+                actual_symbol_width = CONFIG.line_font:width(dep.symbol, size)
+            end
+            local symbol_margin_top = (symbol_height - symbol_font_size) / 2
+            CONFIG.line_font:write(
+                x + symbol_width/2 - actual_symbol_width/2,
+                y + symbol_margin_top,
+                dep.symbol,
+                symbol_font_size,
+                ifr,ifg,ifb,1
+            )
+            x = x + symbol_width + 20
 
-                x = 0
+            -- first line
+            CONFIG.heading_font:write(
+                text_x,
+                text_y,
+                heading,
+                text_upper_size,
+                CONFIG.heading_colour.r,
+                CONFIG.heading_colour.g,
+                CONFIG.heading_colour.b,
+                CONFIG.heading_colour.a
+            )
 
-                -- vehicle type
-                if CONFIG.show_vehicle_type then
-                    if categories[dep.icon] then
-                        icon_y = y + ( symbol_height - icon_size ) / 2
-                        categories[dep.icon]:draw(
-                            0, icon_y,
-                            icon_size, icon_y+icon_size
-                        )
-                    end
-                    x = x + icon_size + 20
-                end
+            -- second line
+            if CONFIG.large_minutes then
+                local time_width = time_font:width(time, text_upper_size)
+                local append_width = CONFIG.second_font:width(append, text_lower_size)
 
-                -- line number
-                colored:use{color = {
-                    ir,
-                    ig,
-                    ib,
-                    1
-                }}
-                white:draw(
-                    x, y,
-                    x + 100,y + symbol_height
-                )
-                colored:deactivate()
-
-                local symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
-                if symbol_width < 100 then
-                    symbol_margin_top = (symbol_height - icon_size) / 2
-                    CONFIG.line_font:write(
-                        x + 50 - symbol_width/2,
-                        y + symbol_margin_top,
-                        dep.symbol,
-                        icon_size,
-                        ifr,ifg,ifb,1
-                    )
-                else
-                    size = icon_size
-                    while CONFIG.line_font:width(dep.symbol, size) > 95 do
-                        size = size - 2
-                    end
-                    symbol_margin_top = (symbol_height - size) / 2
-                    symbol_width = CONFIG.line_font:width(dep.symbol, size)
-                    CONFIG.line_font:write(
-                        x + 50 - symbol_width/2,
-                        y+symbol_margin_top,
-                        dep.symbol,
-                        size,
-                        ifr,ifg,ifb,1
-                    )
-                end
-                x = x + 110
-
-                -- time of event
-                local space_for_time = icon_size * 3.5
-                local time_width = time_font:width(time, icon_size)
                 time_font:write(
-                    x + (space_for_time - time_width) / 2,
-                    y + ((symbol_height - icon_size) / 2),
-                    time,
-                    icon_size,
+                    real_width - time_width,
+                    text_y, time, text_upper_size,
                     tr, tg, tb, 1
-                )
-                x = x + space_for_time + 10
-
-                -- destination and follow-up information
-                text_y = y + (margin_bottom * 0.5)
-                CONFIG.heading_font:write(
-                    x,
-                    text_y,
-                    heading,
-                    text_upper_size,
-                    CONFIG.heading_colour.r,
-                    CONFIG.heading_colour.g,
-                    CONFIG.heading_colour.b,
-                    CONFIG.heading_colour.a
                 )
 
                 text_y = text_y + text_upper_size
+                if platform ~= "" then
+                    CONFIG.second_font:write(
+                        text_x,
+                        text_y,
+                        platform,
+                        text_lower_size,
+                        CONFIG.second_colour.r,
+                        CONFIG.second_colour.g,
+                        CONFIG.second_colour.b,
+                        CONFIG.second_colour.a
+                    )
+                end
                 CONFIG.second_font:write(
-                    x,
+                    real_width - append_width,
+                    text_y,
+                    append,
+                    text_lower_size,
+                    CONFIG.second_colour.r,
+                    CONFIG.second_colour.g,
+                    CONFIG.second_colour.b,
+                    CONFIG.second_colour.a
+                )
+            else
+                local time_width = time_font:width(time, text_lower_size)
+                local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
+
+                text_y = text_y + text_upper_size
+                time_font:write(
+                    text_x,
+                    text_y, time, text_lower_size,
+                    tr, tg, tb, 1
+                )
+                CONFIG.second_font:write(
+                    text_x + time_width + time_after_width,
                     text_y,
                     platform .. " " .. append,
                     text_lower_size,
