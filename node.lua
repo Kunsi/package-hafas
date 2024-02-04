@@ -255,7 +255,7 @@ local function draw(real_width, real_height)
                 while CONFIG.line_font:width(dep.symbol, symbol_font_size) > symbol_width do
                     symbol_font_size = symbol_font_size - 1
                 end
-                actual_symbol_width = CONFIG.line_font:width(dep.symbol, size)
+                actual_symbol_width = CONFIG.line_font:width(dep.symbol, symbol_font_size)
             end
             local symbol_margin_top = (symbol_height - symbol_font_size) / 2
             CONFIG.line_font:write(
