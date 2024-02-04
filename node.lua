@@ -1,5 +1,3 @@
-local api = ...
-
 local json = require "json"
 
 util.init_hosted()
@@ -16,6 +14,12 @@ util.json_watch("events.json", function(content)
 end)
 
 local white = resource.create_colored_texture(1,1,1,1)
+local bg = resource.create_colored_texture(
+    CONFIG.background_colour.r,
+    CONFIG.background_colour.g,
+    CONFIG.background_colour.b,
+    1
+)
 local base_time = N.base_time or 0
 
 util.data_mapper{
@@ -32,6 +36,10 @@ end
 local function scrolling_text(id, x1, y1, x2, y2, text, font, r, g, b, a)
     local font_size = y2 - y1
     local text_width = font:width(text, font_size)
+    if x2 - x1 > text_width then
+        font:write(x1, y1, text, font_size, r, g, b, a)
+        return
+    end
     if not scroll_position[id] then
         -- start all the way to the right
         scroll_position[id] = sys.now()
@@ -42,9 +50,9 @@ local function scrolling_text(id, x1, y1, x2, y2, text, font, r, g, b, a)
         scroll_position[id] = sys.now()
         scroll_position_by_time = 0
     end
-    --api.screen.set_scissor(x1, y1, x2, y2)
     font:write(x2 - scroll_position_by_time, y1, text, font_size, r, g, b, a)
-    --api.screen.set_scissor()
+    bg:draw(x1 - text_width, y1-2, x1, y2+2)
+    bg:draw(x2, y1-2, x2 + text_width, y2+2)
 end
 
 local colored = resource.create_shader[[
@@ -64,7 +72,12 @@ categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
 local function draw(real_width, real_height)
-    CONFIG.background_colour.clear()
+    gl.clear(
+        CONFIG.background_colour.r,
+        CONFIG.background_colour.g,
+        CONFIG.background_colour.b,
+        1
+    )
     local now = unixnow()
     local y = 0
     local now_for_fade = now + (CONFIG.offset * 60)
@@ -174,13 +187,6 @@ local function draw(real_width, real_height)
             local symbol_height = text_upper_size + text_lower_size + margin_bottom
             local symbol_width = 150
 
-            local x = 0
-            local text_y = y + (margin_bottom * 0.5)
-
-            if dep.notes ~= json.null then
-                symbol_height = symbol_height + text_lower_size
-            end
-
             if remaining > (10 + CONFIG.offset) then
                 icon_size = icon_size * 0.8
                 text_upper_size = text_upper_size * 0.8
@@ -189,12 +195,42 @@ local function draw(real_width, real_height)
                 symbol_width = 100
             end
 
+            local x = 0
+            local text_x = symbol_width + 20
+            local text_y = y + (margin_bottom * 0.5)
+
+            if CONFIG.show_vehicle_type then
+                text_x = text_x + icon_size + 20
+            end
+
+            -- third line (if exists)
+            -- needs to go first, because we use the background colour
+            -- to hide the text outside the view area
+            if dep.notes ~= json.null then
+                -- increase symbol height to account for scrolling text
+                symbol_height = symbol_height + text_lower_size
+
+                -- place text
+                local scroller_y = text_y + text_upper_size + text_lower_size
+                scrolling_text(
+                    dep.id,
+                    text_x, scroller_y,
+                    math.min(real_width, text_x + (real_width/2)), scroller_y + text_lower_size,
+                    dep.notes,
+                    CONFIG.second_font,
+                    CONFIG.second_colour.r,
+                    CONFIG.second_colour.g,
+                    CONFIG.second_colour.b,
+                    CONFIG.second_colour.a
+                )
+            end
+
             -- vehicle type
             if CONFIG.show_vehicle_type then
                 if categories[dep.icon] then
                     local icon_y = y + ( symbol_height - icon_size ) / 2
                     categories[dep.icon]:draw(
-                        x, icon_y,
+                        0, icon_y,
                         icon_size, icon_y+icon_size
                     )
                 end
@@ -233,7 +269,7 @@ local function draw(real_width, real_height)
 
             -- first line
             CONFIG.heading_font:write(
-                x,
+                text_x,
                 text_y,
                 heading,
                 text_upper_size,
@@ -257,7 +293,7 @@ local function draw(real_width, real_height)
                 text_y = text_y + text_upper_size
                 if platform ~= "" then
                     CONFIG.second_font:write(
-                        x,
+                        text_x,
                         text_y,
                         platform,
                         text_lower_size,
@@ -283,31 +319,15 @@ local function draw(real_width, real_height)
 
                 text_y = text_y + text_upper_size
                 time_font:write(
-                    x + 170,
+                    text_x,
                     text_y, time, text_lower_size,
                     tr, tg, tb, 1
                 )
                 CONFIG.second_font:write(
-                    x + 170 + time_width + time_after_width,
+                    text_x + time_width + time_after_width,
                     text_y,
                     platform .. " " .. append,
                     text_lower_size,
-                    CONFIG.second_colour.r,
-                    CONFIG.second_colour.g,
-                    CONFIG.second_colour.b,
-                    CONFIG.second_colour.a
-                )
-            end
-
-            -- third line (if exists)
-            if dep.notes ~= json.null then
-                text_y = text_y + text_lower_size
-                scrolling_text(
-                    dep.id,
-                    x, text_y,
-                    real_width, text_y + text_lower_size,
-                    dep.notes,
-                    CONFIG.second_font,
                     CONFIG.second_colour.r,
                     CONFIG.second_colour.g,
                     CONFIG.second_colour.b,
