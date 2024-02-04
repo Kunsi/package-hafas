@@ -144,11 +144,11 @@ class HAFASEvent:
             # Apparently:
             # A: Accessibility Information
             # I: Internal Stuff
-            # R: Travel information ("fällt aus" etc.)
-            if note["type"] == "R":
+            # R: Travel information ("faellt aus" etc.)
+            if note["type"].upper() in ("R",):
                 notes.append(note["value"])
         if notes:
-            return notes
+            return '  |  '.join(notes)
         return None
 
     @property
