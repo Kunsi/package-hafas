@@ -207,15 +207,37 @@ local function draw(real_width, real_height)
             -- needs to go first, because we use the background colour
             -- to hide the text outside the view area
             if dep.notes ~= json.null then
-                -- increase symbol height to account for scrolling text
-                symbol_height = symbol_height + text_lower_size
+                -- scroller position
+                local max_scroller_width = math.min(
+                    real_width,
+                    text_x + (real_width/2)
+                )
+                local scroller_y = text_y + text_upper_size
+
+                if platform == "" and CONFIG.large_minutes then
+                    --[[
+                        If there's no platform information and we're using
+                        large minutes, we can display the scrolling text
+                        directly below the heading, saving some space.
+
+                        In this case, ensure we're not drawing over the
+                        "append" part of the line.
+                    ]]--
+                    max_scroller_width = math.min(
+                        max_scroller_width,
+                        real_width - CONFIG.second_font:width(append, text_lower_size) - 20
+                    )
+                else
+                    -- increase symbol height to account for scrolling text
+                    symbol_height = symbol_height + text_lower_size
+                    scroller_y = scroller_y + text_lower_size
+                end
 
                 -- place text
-                local scroller_y = text_y + text_upper_size + text_lower_size
                 scrolling_text(
                     dep.id,
                     text_x, scroller_y,
-                    math.min(real_width, text_x + (real_width/2)), scroller_y + text_lower_size,
+                    max_scroller_width, scroller_y + text_lower_size,
                     dep.notes,
                     CONFIG.second_font,
                     CONFIG.second_colour.r,
