@@ -13,7 +13,8 @@
         "type": "select",
         "default": "vbb-test",
         "options": [
-            ["vbb-test", "VBB test (Verkehrsverbund Berlin-Brandenburg)"],
+            ["vbb", "VBB Produktivsystem (Verkehrsverbund Berlin-Brandenburg)"],
+            ["vbb-test", "VBB Testsystem (Verkehrsverbund Berlin-Brandenburg)"],
             ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"]
         ]
     }, {
