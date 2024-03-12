@@ -13,6 +13,7 @@
     "in_the_past": "In der Vergangenheit",
     "arrival_from": "Ankunft von %s",
     "operator_name": "Ein Angebot der %s",
+    "no_departures": "Keine Abfahrten",
     "platform_types": {
       "U": "",
       "PL": "Gleis",
@@ -70,6 +71,7 @@
     "in_the_past": "Yn y gorffennol",
     "arrival_from": "Cyrrhaeddiad o %s",
     "operator_name": "Gwasanaeth %s",
+    "no_departures": "Does dim gwasanaethau ar y gorwel",
     "platform_types": {
       "U": "",
       "PL": "blatfform",
