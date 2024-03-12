@@ -158,7 +158,7 @@
         "hint": "Filter out any transport where destination matches (matched after 'remove string from destination' - regex possible)"
     }, {
         "title": "Show vehicle type",
-        "ui_width": 3,
+        "ui_width": 4,
         "name": "show_vehicle_type",
         "type": "boolean",
         "default": true
@@ -187,7 +187,7 @@
         "title": "Show National Rail Enquiries Logo",
         "type": "boolean",
         "default": false,
-        "ui_width": 4
+        "ui_width": 8
     },{
         "title": "Hours to request",
         "ui_width": 4,
