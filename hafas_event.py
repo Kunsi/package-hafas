@@ -1,11 +1,26 @@
 import re
-from datetime import datetime, timedelta
-
+import hashlib
+import pytz
+from datetime import datetime, timedelta, tzinfo
 from helper import Helper
-from hosted import CONFIG
+from hosted import CONFIG, log
 from mapping import CATEGORY_MAPPING, COLOUR_MAPPING, OPERATOR_LABEL_MAPPING
 
-REMOVE = re.escape(CONFIG["remove_string"].strip())
+REMOVE = re.escape(CONFIG["remove_string"].strip()) if CONFIG["remove_string"] else None
+
+class FixedOffset(tzinfo):
+    def __init__(self, offset, name):
+        self.__offset = timedelta(minutes = offset)
+        self.__name = name
+
+    def utcoffset(self, _dt):
+        return self.__offset
+
+    def tzname(self, _dt):
+        return self.__name
+
+    def dst(self, _dt):
+        return timedelta(0)
 
 
 class HAFASEvent:
@@ -20,6 +35,7 @@ class HAFASEvent:
             if product.get("name") and product.get("catCode"):
                 self.category = product["catCode"]
                 self.operator = product.get("operatorCode", None)
+                self.operatorName = product.get("operatorInfo", {}).get("name", None)
                 self.icon = product.get("icon", None)
 
                 symbol = product["name"]
@@ -33,6 +49,7 @@ class HAFASEvent:
             self.symbol = ""
             self.category = -1
             self.operator = None
+            self.operatorName = None
             self.icon = None
 
         if CONFIG["api_provider"] in CATEGORY_MAPPING:
@@ -43,12 +60,20 @@ class HAFASEvent:
             self.category_icon = ""
 
         scheduled = datetime.strptime(
-            data["date"] + " " + data["time"], "%Y-%m-%d %H:%M:%S"
+            data["date"] + " " + data["time"], "%Y-%m-%d %H:%M:%S",
         )
+        if data.get("tz", None) is not None:
+            scheduled = scheduled.replace(tzinfo=FixedOffset(data["tz"], ""))
+        else:
+            scheduled = scheduled.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
         if "rtTime" in data and "rtDate" in data:
             self.realtime = datetime.strptime(
                 data["rtDate"] + " " + data["rtTime"], "%Y-%m-%d %H:%M:%S"
             )
+            if data.get("rtTz", None) is not None:
+                self.realtime = self.realtime.replace(tzinfo=FixedOffset(data["rtTz"], ""))
+            else:
+                self.realtime = self.realtime.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
             diff = self.realtime - scheduled
             self.delay = int(diff.total_seconds() / 60)
         else:
@@ -63,18 +88,19 @@ class HAFASEvent:
         if key not in self.json:
             return None
         else:
-            for possible_match in (
-                "^(" + REMOVE + "[, -]+)",
-                "( *\(" + REMOVE + "\))",
-                "(" + REMOVE + " +)",
-            ):
-                if re.search(possible_match, self.json[key].strip()):
-                    return re.sub(
-                        possible_match,
-                        "",
-                        self.json[key].strip(),
-                        flags=re.IGNORECASE,
-                    ).strip()
+            if REMOVE:
+                for possible_match in (
+                    "^(" + REMOVE + "[, -]+)",
+                    "( *\(" + REMOVE + "\))",
+                    "(" + REMOVE + " +)",
+                ):
+                    if re.search(possible_match, self.json[key].strip()):
+                        return re.sub(
+                            possible_match,
+                            "",
+                            self.json[key].strip(),
+                            flags=re.IGNORECASE,
+                        ).strip()
             return self.json[key].strip()
 
     @property
@@ -111,13 +137,15 @@ class HAFASEvent:
             ][self.symbol]
         elif provider in COLOUR_MAPPING and self.symbol in COLOUR_MAPPING[provider]:
             (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][self.symbol]
+        elif provider in COLOUR_MAPPING and self.operator in COLOUR_MAPPING[provider]:
+            (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][self.operator]
         elif self.icon is not None:
             r, g, b = Helper.hex2rgb(self.icon["backgroundColor"]["hex"][1:])
             font_r, font_g, font_b = Helper.hex2rgb(
                 self.icon["foregroundColor"]["hex"][1:]
             )
         else:
-            name_hash = md5(self.json["name"]).hexdigest()
+            name_hash = hashlib.md5(self.json["name"]).hexdigest()
             r, g, b = Helper.hex2rgb(name_hash[:6])
             h, s, v = Helper.rgb2hsv(r * 255, g * 255, b * 255)
             if v > 0.75:
@@ -140,13 +168,14 @@ class HAFASEvent:
     @property
     def notes(self):
         notes = []
-        for note in self.json["Notes"]["Note"]:
-            # Apparently:
-            # A: Accessibility Information
-            # I: Internal Stuff
-            # R: Travel information ("faellt aus" etc.)
-            if note["type"].upper() in ("R",):
-                notes.append(note["value"])
+        if "Notes" in self.json:
+            for note in self.json["Notes"]["Note"]:
+                # Apparently:
+                # A: Accessibility Information
+                # I: Internal Stuff
+                # R: Travel information ("faellt aus" etc.)
+                if note["type"].upper() in ("R",):
+                    notes.append(note["value"])
         if notes:
             return '  |  '.join(notes)
         return None
@@ -158,10 +187,13 @@ class HAFASEvent:
     @property
     def platform(self):
         if "platform" in self.json:
-            return "{} {}".format(
-                self.json["platform"].get("type", ""),
-                self.json["platform"].get("text", ""),
-            ).strip()
+            return {
+                "type": self.json["platform"].get("type", "X"),
+                "value": self.json["platform"].get("text", ""),
+            }
         if "track" in self.json:
-            return self.json["track"]
-        return ""
+            return {
+                "type": "PL",
+                "value": self.json["track"]
+            }
+        return None

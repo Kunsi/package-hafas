@@ -1,3 +1,5 @@
+import datetime
+import pytz
 from sys import stderr
 from time import mktime
 
@@ -46,4 +48,4 @@ class Helper:
 
     @staticmethod
     def to_unixtimestamp(dt):
-        return int(mktime(dt.timetuple()))
+        return int(mktime(dt.astimezone(pytz.utc).utctimetuple()))

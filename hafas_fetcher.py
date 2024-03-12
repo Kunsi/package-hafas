@@ -1,4 +1,5 @@
 import json
+import pytz
 from itertools import islice
 
 from requests import get
@@ -6,12 +7,13 @@ from requests import get
 from hafas_event import HAFASEvent
 from helper import Helper, log
 from hosted import CONFIG
-from mapping import API_MAPPING
+from mapping import API_MAPPING, SYMBOL_IS_GROUP
 
 
 class HAFASFetcher:
     def __init__(self):
         self.data_sources = CONFIG["data_sources"]
+        self.tz = pytz.timezone(CONFIG["timezone"])
         self.departures = []
         self.arrivals = []
         self.events = []
@@ -25,12 +27,17 @@ class HAFASFetcher:
         departures = sorted(departures)
         for n, dep in enumerate(departures):
             for follow in islice(departures, n + 1, None):
-                if dep.symbol == follow.symbol and (
-                    (dep.platform != "" and dep.platform == follow.platform)
-                    or dep.destination == follow.destination
-                ):
-                    dep.follow = follow
-                    break
+                if SYMBOL_IS_GROUP[CONFIG["api_provider"]]:
+                    if dep.symbol == follow.symbol and (
+                            (dep.platform != "" and dep.platform == follow.platform)
+                        or dep.destination == follow.destination
+                    ):
+                        dep.follow = follow
+                        break
+                else:
+                    if dep.category == follow.category and dep.destination == follow.destination and dep.id != follow.id:
+                        dep.follow = follow
+                        break
         self.departures.extend(departures)
 
         arrivals = []
@@ -86,6 +93,7 @@ class HAFASFetcher:
                 stop=stop_id,
                 minutes=CONFIG["request_hours"] * 60,
                 key=key,
+                language=CONFIG["language"],
             )
 
             if not self.data_sources == "arrivals":
@@ -154,17 +162,18 @@ class HAFASFetcher:
                 "icon": dep.category_icon,
                 "id": dep.id,
                 "next_time": (
-                    dep.follow.realtime.strftime("%H:%M") if dep.follow else ""
+                    dep.follow.realtime.astimezone(self.tz).strftime("%H:%M") if dep.follow else ""
                 ),
                 "next_timestamp": (
                     Helper.to_unixtimestamp(dep.follow.realtime) if dep.follow else 0
                 ),
                 "notes": dep.notes,
                 "operator": dep.operator,
+                "operator_name": dep.operatorName,
                 "platform": dep.platform,
                 "stop": dep.stop,
                 "symbol": dep.symbol,
-                "time": dep.realtime.strftime("%H:%M"),
+                "time": dep.realtime.astimezone(self.tz).strftime("%H:%M"),
                 "timestamp": Helper.to_unixtimestamp(dep.realtime),
             }
             departure.update(dep.line_colour)

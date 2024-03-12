@@ -196,5 +196,25 @@
         "title": "Line Height",
         "ui_width": 4,
         "type": "integer"
+    }, {
+        "default": "de",
+        "name": "language",
+        "title": "Display Language",
+        "type": "select",
+        "options": [
+            ["de", "Deutch"],
+            ["en", "English"],
+            ["cy", "Cymraeg"]
+        ]
+    }, {
+        "name": "timezone",
+        "title": "Timezone",
+        "type": "string",
+        "default": "Europe/Berlin"
+    }, {
+        "name": "nre_powered",
+        "title": "Show National Rail Equiries Logo",
+        "type": "boolean",
+        "default": false
     }]
 }

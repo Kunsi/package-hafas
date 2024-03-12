@@ -7,6 +7,8 @@ local rotate_before = nil
 local transform = nil
 local scroll_position = {}
 
+local translations = json.decode(resource.load_file "translations.json")
+
 gl.setup(NATIVE_WIDTH, NATIVE_HEIGHT)
 
 util.json_watch("events.json", function(content)
@@ -71,6 +73,26 @@ categories["u_bahn"] = resource.load_image("u_bahn.png")
 categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
+nre_powered_logo = resource.load_image{
+  file = "NRE_Powered_logo.png";
+  mimap = true;
+  nearest = true;
+}
+
+local function format_seconds(seconds)
+    local minutes = math.floor(seconds / 60)
+    if minutes >= 60 then
+      local hours = minutes / 60
+      if minutes % 60 == 0 then
+        return string.format(translations[CONFIG.language].time_hour, math.floor(hours))
+      else
+        return string.format(translations[CONFIG.language].time_hour_min, math.floor(hours), minutes % 60)
+      end
+    else
+      return string.format(translations[CONFIG.language].time_min, minutes)
+    end
+end
+
 local function draw(real_width, real_height)
     gl.clear(
         CONFIG.background_colour.r,
@@ -86,6 +108,11 @@ local function draw(real_width, real_height)
 
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
+
+    local available_height = real_height
+    if CONFIG.nre_powered then
+      available_height = available_height - 100
+    end
 
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
@@ -114,29 +141,29 @@ local function draw(real_width, real_height)
             local x = 0
 
             local heading = dep.direction
-            local preposition = "von"
+            local preposition = translations[CONFIG.language].from
 
             if not dep.departure then
-               heading = "Ankunft von " .. dep.direction
-               preposition = "an"
+               heading = string.format(translations[CONFIG.language].arrival_from, dep.direction)
+               preposition = translations[CONFIG.language].at
             end
 
             if remaining < 0 then
-                time = "In der Vergangenheit"
+                time = translations[CONFIG.language].in_the_past
                 if dep.next_timestamp > 10 then
-                    append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
+                    append = string.format(translations[CONFIG.language].next_min, format_seconds(dep.next_timestamp - now))
                 end
             elseif remaining < 1 then
                 if now % 2 < 1 then
-                    time = "*jetzt"
+                    time = "*" .. translations[CONFIG.language].now
                 else
-                    time = "jetzt*"
+                    time = translations[CONFIG.language].now .. "*"
                 end
                 if dep.next_timestamp > 10 then
-                    append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
+                    append = string.format(translations[CONFIG.language].next_min, format_seconds(dep.next_timestamp - now))
                 end
             elseif remaining < (11 + CONFIG.offset) then
-                time = string.format("in %d min", ((dep.timestamp - now)/60))
+                time = string.format(translations[CONFIG.language].in_min, format_seconds(dep.timestamp - now))
                 if remaining < (1 + CONFIG.offset) then
                     if now % 2 < 1 then
                         time = "*" .. time
@@ -145,22 +172,26 @@ local function draw(real_width, real_height)
                     end
                 end
                 if dep.next_timestamp > 10 then
-                    append = "und danach in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
+                    append = string.format(translations[CONFIG.language].next_after_min, format_seconds(dep.next_timestamp - dep.timestamp))
                 end
             else
                 if dep.next_time and dep.next_timestamp > 10 then
-                    append = "und wieder " .. dep.next_time
+                    append = string.format(translations[CONFIG.language].next_timestamp, dep.next_time)
                 end
             end
 
             if number_of_stops > 1 then
                 platform = preposition .. " " .. dep.stop
-                if dep.platform ~= "" then
-                    platform = platform .. ", " .. dep.platform
+                if dep.platform ~= json.null then
+                    platform = platform .. ", " .. preposition " " ..
+                      translations[CONFIG.language].platform_types[dep.platform.type] ..
+                      " " .. dep.platform.value
                 end
             else
-                if dep.platform ~= "" then
-                    platform = preposition .. " " .. dep.platform
+                if dep.platform ~= json.null then
+                    platform = preposition .. " " ..
+                      translations[CONFIG.language].platform_types[dep.platform.type] ..
+                      " " .. dep.platform.value
                 end
             end
 
@@ -245,6 +276,24 @@ local function draw(real_width, real_height)
                     CONFIG.second_colour.b,
                     CONFIG.second_colour.a
                 )
+            end
+
+            if dep.operator_name ~= json.null then
+              local name_y = text_y + text_upper_size
+              if platform ~= "" or not CONFIG.large_minutes then
+                symbol_height = symbol_height + text_lower_size
+                name_y = name_y + text_lower_size
+              end
+              CONFIG.second_font:write(
+                  text_x,
+                  name_y,
+                  string.format(translations[CONFIG.language].operator_name, dep.operator_name),
+                  text_lower_size,
+                  CONFIG.second_colour.r,
+                  CONFIG.second_colour.g,
+                  CONFIG.second_colour.b,
+                  CONFIG.second_colour.a
+              )
             end
 
             -- vehicle type
@@ -359,11 +408,16 @@ local function draw(real_width, real_height)
 
             y = y + symbol_height + margin_bottom
 
-            if y > real_height then
+            if y > available_height then
                 break
             end
         end
     end
+
+    local nre_width, nre_height = nre_powered_logo:size()
+    local nre_height_scaled = 75
+    local nre_width_scaled = nre_width * (nre_height_scaled / nre_height)
+    nre_powered_logo:draw(real_width - nre_width_scaled, real_height - nre_height_scaled, real_width, real_height)
 end
 
 function node.render()
