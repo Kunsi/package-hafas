@@ -15,10 +15,11 @@
         "options": [
             ["vbb", "VBB Produktivsystem (Verkehrsverbund Berlin-Brandenburg)"],
             ["vbb-test", "VBB Testsystem (Verkehrsverbund Berlin-Brandenburg)"],
-            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"]
+            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"],
+            ["tfemf", "Trafnidieath EMF / Transport for EMF"]
         ]
     }, {
-        "title": "API-Key oder Cache-URL",
+        "title": "API-Key or Cache-URL",
         "ui_width": 8,
         "name": "api_key",
         "type": "string",
@@ -37,7 +38,7 @@
         "name": "requests_max_per_day",
         "type": "integer",
         "default": 4900,
-        "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server"
+        "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server; specify -1 for no limit"
     }, {
         "title": "Fonts and colours",
         "type": "section"
