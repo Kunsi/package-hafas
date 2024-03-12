@@ -158,20 +158,26 @@
         "hint": "Filter out any transport where destination matches (matched after 'remove string from destination' - regex possible)"
     }, {
         "title": "Show vehicle type",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "show_vehicle_type",
         "type": "boolean",
         "default": true
     }, {
+        "title": "Show operator name",
+        "ui_width": 3,
+        "name": "show_operator_name",
+        "type": "boolean",
+        "default": false
+    }, {
         "title": "Large Minutes",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "large_minutes",
         "type": "boolean",
         "default": true,
         "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
     }, {
         "title": "Coloured Line Numbers",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "coloured_lines",
         "type": "boolean",
         "default": true,

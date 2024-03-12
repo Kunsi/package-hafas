@@ -12,7 +12,7 @@
     "next_timestamp": "und wieder %s",
     "in_the_past": "In der Vergangenheit",
     "arrival_from": "Ankunft von %s",
-    "operator_name": "Ein Angebot von %s",
+    "operator_name": "Ein Angebot der %s",
     "platform_types": {
       "U": "",
       "PL": "Gleis",

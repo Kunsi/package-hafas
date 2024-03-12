@@ -183,7 +183,7 @@ local function draw(real_width, real_height)
             if number_of_stops > 1 then
                 platform = preposition .. " " .. dep.stop
                 if dep.platform ~= json.null then
-                    platform = platform .. ", " .. preposition " " ..
+                    platform = platform .. ", " ..
                       translations[CONFIG.language].platform_types[dep.platform.type] ..
                       " " .. dep.platform.value
                 end
@@ -234,6 +234,29 @@ local function draw(real_width, real_height)
                 text_x = text_x + icon_size + 20
             end
 
+            local text_y_start = text_y
+            text_y = text_y + text_upper_size
+
+            -- operator name
+            if CONFIG.show_operator_name then
+              if dep.operator_name ~= json.null then
+                if platform ~= "" or not CONFIG.large_minutes then
+                  symbol_height = symbol_height + text_lower_size
+                  text_y = text_y + text_lower_size
+                end
+                CONFIG.second_font:write(
+                    text_x,
+                    text_y,
+                    string.format(translations[CONFIG.language].operator_name, dep.operator_name),
+                    text_lower_size,
+                    CONFIG.second_colour.r,
+                    CONFIG.second_colour.g,
+                    CONFIG.second_colour.b,
+                    CONFIG.second_colour.a
+                )
+              end
+            end
+
             -- third line (if exists)
             -- needs to go first, because we use the background colour
             -- to hide the text outside the view area
@@ -243,7 +266,6 @@ local function draw(real_width, real_height)
                     real_width,
                     text_x + (real_width/2)
                 )
-                local scroller_y = text_y + text_upper_size
 
                 if platform == "" and CONFIG.large_minutes then
                     --[[
@@ -261,14 +283,14 @@ local function draw(real_width, real_height)
                 else
                     -- increase symbol height to account for scrolling text
                     symbol_height = symbol_height + text_lower_size
-                    scroller_y = scroller_y + text_lower_size
+                    text_y = text_y + text_lower_size
                 end
 
                 -- place text
                 scrolling_text(
                     dep.id,
-                    text_x, scroller_y,
-                    max_scroller_width, scroller_y + text_lower_size,
+                    text_x, text_y,
+                    max_scroller_width, text_y + text_lower_size,
                     dep.notes,
                     CONFIG.second_font,
                     CONFIG.second_colour.r,
@@ -276,24 +298,6 @@ local function draw(real_width, real_height)
                     CONFIG.second_colour.b,
                     CONFIG.second_colour.a
                 )
-            end
-
-            if dep.operator_name ~= json.null then
-              local name_y = text_y + text_upper_size
-              if platform ~= "" or not CONFIG.large_minutes then
-                symbol_height = symbol_height + text_lower_size
-                name_y = name_y + text_lower_size
-              end
-              CONFIG.second_font:write(
-                  text_x,
-                  name_y,
-                  string.format(translations[CONFIG.language].operator_name, dep.operator_name),
-                  text_lower_size,
-                  CONFIG.second_colour.r,
-                  CONFIG.second_colour.g,
-                  CONFIG.second_colour.b,
-                  CONFIG.second_colour.a
-              )
             end
 
             -- vehicle type
@@ -341,7 +345,7 @@ local function draw(real_width, real_height)
             -- first line
             CONFIG.heading_font:write(
                 text_x,
-                text_y,
+                text_y_start,
                 heading,
                 text_upper_size,
                 CONFIG.heading_colour.r,
@@ -357,15 +361,15 @@ local function draw(real_width, real_height)
 
                 time_font:write(
                     real_width - time_width,
-                    text_y, time, text_upper_size,
+                    text_y_start, time, text_upper_size,
                     tr, tg, tb, 1
                 )
 
-                text_y = text_y + text_upper_size
+                text_y_start = text_y_start + text_upper_size
                 if platform ~= "" then
                     CONFIG.second_font:write(
                         text_x,
-                        text_y,
+                        text_y_start,
                         platform,
                         text_lower_size,
                         CONFIG.second_colour.r,
@@ -376,7 +380,7 @@ local function draw(real_width, real_height)
                 end
                 CONFIG.second_font:write(
                     real_width - append_width,
-                    text_y,
+                    text_y_start,
                     append,
                     text_lower_size,
                     CONFIG.second_colour.r,
@@ -388,15 +392,15 @@ local function draw(real_width, real_height)
                 local time_width = time_font:width(time, text_lower_size)
                 local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
 
-                text_y = text_y + text_upper_size
+                text_y_start = text_y_start + text_upper_size
                 time_font:write(
                     text_x,
-                    text_y, time, text_lower_size,
+                    text_y_start, time, text_lower_size,
                     tr, tg, tb, 1
                 )
                 CONFIG.second_font:write(
                     text_x + time_width + time_after_width,
-                    text_y,
+                    text_y_start,
                     platform .. " " .. append,
                     text_lower_size,
                     CONFIG.second_colour.r,
@@ -414,10 +418,12 @@ local function draw(real_width, real_height)
         end
     end
 
-    local nre_width, nre_height = nre_powered_logo:size()
-    local nre_height_scaled = 75
-    local nre_width_scaled = nre_width * (nre_height_scaled / nre_height)
-    nre_powered_logo:draw(real_width - nre_width_scaled, real_height - nre_height_scaled, real_width, real_height)
+    if CONFIG.nre_powered then
+      local nre_width, nre_height = nre_powered_logo:size()
+      local nre_height_scaled = 75
+      local nre_width_scaled = nre_width * (nre_height_scaled / nre_height)
+      nre_powered_logo:draw(real_width - nre_width_scaled, real_height - nre_height_scaled, real_width, real_height)
+    end
 end
 
 function node.render()
