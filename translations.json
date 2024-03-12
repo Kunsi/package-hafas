@@ -41,6 +41,7 @@
     "in_the_past": "In the past",
     "arrival_from": "Arrival from %s",
     "operator_name": "A %s service",
+    "no_departures": "No upcoming services",
     "platform_types": {
       "U": "",
       "PL": "platform",

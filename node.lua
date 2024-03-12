@@ -114,6 +114,8 @@ local function draw(real_width, real_height)
       available_height = available_height - 100
     end
 
+    local has_departures = false
+
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if now_for_fade > dep.timestamp then
@@ -128,6 +130,7 @@ local function draw(real_width, real_height)
 
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
+            has_departures = true
             if y < 0 and dep.timestamp >= now_for_fade then
                 y = 0
             end
@@ -202,6 +205,7 @@ local function draw(real_width, real_height)
             end
 
             local time_colour = CONFIG.time_colour
+            local scheduled_time_color = CONFIG.time_colour
             if dep.delay >= 0 then
                time_font = CONFIG.realtime_font
                time_colour = CONFIG.realtime_punctual_colour
@@ -210,6 +214,7 @@ local function draw(real_width, real_height)
                end
             end
             local tr, tg, tb = time_colour.r, time_colour.g, time_colour.b
+            local str, stg, stb = scheduled_time_color.r, scheduled_time_color.g, scheduled_time_color.b
 
             local icon_size = line_height * 0.66
             local text_upper_size = line_height * 0.5
@@ -356,6 +361,7 @@ local function draw(real_width, real_height)
             -- second line
             if CONFIG.large_minutes then
                 local time_width = time_font:width(time, text_upper_size)
+                local scheduled_time_width = time_font:width(dep.scheduled_time, text_lower_size)
                 local append_width = CONFIG.second_font:width(append, text_lower_size)
 
                 time_font:write(
@@ -363,6 +369,20 @@ local function draw(real_width, real_height)
                     text_y_start, time, text_upper_size,
                     tr, tg, tb, 1
                 )
+                if dep.delay > 0 then
+                  time_font:write(
+                      real_width - time_width - scheduled_time_width - CONFIG.margin - 5,
+                      text_y_start + (text_upper_size - text_lower_size), dep.scheduled_time, text_lower_size,
+                      str, stg, stb, 1
+                  )
+                  local text_middle = text_y_start + (text_upper_size - text_lower_size) + (text_lower_size / 2)
+                  white:draw(
+                      real_width - time_width - scheduled_time_width - CONFIG.margin - 5,
+                      text_middle,
+                      real_width - time_width - CONFIG.margin - 5,
+                      text_middle + 1
+                  )
+                end
 
                 text_y_start = text_y_start + text_upper_size
                 if platform ~= "" then
@@ -415,6 +435,22 @@ local function draw(real_width, real_height)
                 break
             end
         end
+    end
+
+    if not has_departures then
+        local text = translations[CONFIG.language].no_departures
+        local font_size = CONFIG.line_height
+        local text_width = CONFIG.heading_font:width(text, font_size)
+        CONFIG.heading_font:write(
+            (real_width - text_width) / 2,
+            (real_height - font_size) / 2,
+            text,
+            font_size,
+            CONFIG.heading_colour.r,
+            CONFIG.heading_colour.g,
+            CONFIG.heading_colour.b,
+            CONFIG.heading_colour.a
+        )
     end
 
     if CONFIG.nre_powered then
