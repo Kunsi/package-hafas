@@ -116,6 +116,11 @@
         "type": "color",
         "default": [0,0,0,1]
     }, {
+        "title": "Header",
+        "name": "header",
+        "type": "string",
+        "default": ""
+    }, {
         "title": "Display Options",
         "type": "section"
     }, {

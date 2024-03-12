@@ -114,18 +114,29 @@ local function draw(real_width, real_height)
       available_height = available_height - 100
     end
 
+    if CONFIG.header ~= "" then
+      available_height = available_height - line_height
+      y = y + line_height + margin_bottom
+    end
+
     local has_departures = false
 
+    local y_dec = 0
+    local fade_timestamp = 0
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if now_for_fade > dep.timestamp then
-                y = (y - line_height - margin_bottom) / fadeout * (now_for_fade - dep.timestamp)
+                y_dec = y_dec + line_height + margin_bottom
+                fade_timestamp = dep.timestamp
             end
         end
         if not stops[dep.stop] then
             number_of_stops = number_of_stops + 1
         end
         stops[dep.stop] = true
+    end
+    if y_dec ~= 0 then
+      y = y - (y_dec * (now_for_fade - fade_timestamp) / fadeout)
     end
 
     for idx, dep in ipairs(events) do
@@ -435,6 +446,20 @@ local function draw(real_width, real_height)
                 break
             end
         end
+    end
+
+    if CONFIG.header ~= "" then
+      bg:draw(0, 0, real_width, line_height + margin_bottom + CONFIG.margin)
+      CONFIG.heading_font:write(
+          CONFIG.margin,
+          CONFIG.margin,
+          CONFIG.header,
+          line_height,
+          CONFIG.heading_colour.r,
+          CONFIG.heading_colour.g,
+          CONFIG.heading_colour.b,
+          CONFIG.heading_colour.a
+      )
     end
 
     if not has_departures then
