@@ -164,30 +164,36 @@
         "default": true
     }, {
         "title": "Show operator name",
-        "ui_width": 3,
+        "ui_width": 4,
         "name": "show_operator_name",
         "type": "boolean",
         "default": false
     }, {
         "title": "Large Minutes",
-        "ui_width": 3,
+        "ui_width": 4,
         "name": "large_minutes",
         "type": "boolean",
         "default": true,
         "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
     }, {
         "title": "Coloured Line Numbers",
-        "ui_width": 3,
+        "ui_width": 4,
         "name": "coloured_lines",
         "type": "boolean",
         "default": true,
         "hint": "if deselected, lines will appear as grey box with white text"
     }, {
+        "name": "nre_powered",
+        "title": "Show National Rail Enquiries Logo",
+        "type": "boolean",
+        "default": false,
+        "ui_width": 4
+    },{
         "title": "Hours to request",
         "ui_width": 4,
         "name": "request_hours",
         "type": "integer",
-        "default": 3,
+        "default": 4,
         "hint": "how many hours of fahrplan to show"
     }, {
         "title": "Time Offset in minutes",
@@ -213,24 +219,18 @@
             ["en", "English"],
             ["cy", "Cymraeg"]
         ],
-        "ui_width": 3
+        "ui_width": 4
     }, {
         "name": "timezone",
         "title": "Timezone",
         "type": "string",
         "default": "Europe/Berlin",
-        "ui_width": 3
-    }, {
-        "name": "nre_powered",
-        "title": "Show National Rail Enquiries Logo",
-        "type": "boolean",
-        "default": false,
-        "ui_width": 3
+        "ui_width": 4
     }, {
         "name": "margin",
         "title": "Outside margin",
         "type": "integer",
         "default": 0,
-        "ui_width": 3
+        "ui_width": 4
     }]
 }
