@@ -13,7 +13,8 @@ API_MAPPING = {
     "rmv": "https://www.rmv.de/hapi/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
     "vbb": "https://fahrinfo.vbb.de/fahrinfo/restproxy/2.32/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
     "vbb-test": "https://vbb.demo.hafas.de/fahrinfo/restproxy/2.32/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
-    "tfemf": "https://tracking.tfemf.uk/hafas/{endpoint}?id={stop}&duration={minutes}&format=json&lang={language}",
+    "tfemf": "http://172.23.152.51:8000/hafas/{endpoint}?id={stop}&duration={minutes}&format=json&lang={language}",
+    # "tfemf": "https://tracking.tfemf.uk/hafas/{endpoint}?id={stop}&duration={minutes}&format=json&lang={language}",
 }
 
 CATEGORY_MAPPING = {

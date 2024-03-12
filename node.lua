@@ -101,7 +101,7 @@ local function draw(real_width, real_height)
         1
     )
     local now = unixnow()
-    local y = 0
+    local y = CONFIG.margin
     local now_for_fade = now + (CONFIG.offset * 60)
     local stops = {}
     local number_of_stops = 0
@@ -109,7 +109,7 @@ local function draw(real_width, real_height)
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
 
-    local available_height = real_height
+    local available_height = real_height - (2 * CONFIG.margin)
     if CONFIG.nre_powered then
       available_height = available_height - 100
     end
@@ -138,7 +138,6 @@ local function draw(real_width, real_height)
             local remaining = math.floor((dep.timestamp - now) / 60)
             local append = ""
             local platform = ""
-            local x = 0
 
             local heading = dep.direction
             local preposition = translations[CONFIG.language].from
@@ -227,7 +226,7 @@ local function draw(real_width, real_height)
             end
 
             local x = 0
-            local text_x = symbol_width + 20
+            local text_x = symbol_width + 20 + CONFIG.margin
             local text_y = y + (margin_bottom * 0.5)
 
             if CONFIG.show_vehicle_type then
@@ -305,8 +304,8 @@ local function draw(real_width, real_height)
                 if categories[dep.icon] then
                     local icon_y = y + ( symbol_height - icon_size ) / 2
                     categories[dep.icon]:draw(
-                        0, icon_y,
-                        icon_size, icon_y+icon_size
+                        CONFIG.margin, icon_y,
+                        icon_size+CONFIG.margin, icon_y+icon_size
                     )
                 end
                 x = icon_size + 20
@@ -320,8 +319,8 @@ local function draw(real_width, real_height)
                 1,
             }}
             white:draw(
-                x, y,
-                x + symbol_width, y + symbol_height
+                x + CONFIG.margin, y,
+                x + symbol_width + CONFIG.margin, y + symbol_height
             )
             colored:deactivate()
             local actual_symbol_width = CONFIG.line_font:width(dep.symbol, icon_size)
@@ -334,7 +333,7 @@ local function draw(real_width, real_height)
             end
             local symbol_margin_top = (symbol_height - symbol_font_size) / 2
             CONFIG.line_font:write(
-                x + symbol_width/2 - actual_symbol_width/2,
+                x + symbol_width/2 - actual_symbol_width/2 + CONFIG.margin,
                 y + symbol_margin_top,
                 dep.symbol,
                 symbol_font_size,
@@ -360,7 +359,7 @@ local function draw(real_width, real_height)
                 local append_width = CONFIG.second_font:width(append, text_lower_size)
 
                 time_font:write(
-                    real_width - time_width,
+                    real_width - time_width - CONFIG.margin,
                     text_y_start, time, text_upper_size,
                     tr, tg, tb, 1
                 )
@@ -379,7 +378,7 @@ local function draw(real_width, real_height)
                     )
                 end
                 CONFIG.second_font:write(
-                    real_width - append_width,
+                    real_width - append_width - CONFIG.margin,
                     text_y_start,
                     append,
                     text_lower_size,

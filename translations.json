@@ -1,7 +1,7 @@
 {
   "de": {
     "time_min": "%d min",
-    "time_hour_min": "%d std %02d min",
+    "time_hour_min": "%d std %d min",
     "time_hour": "%d std",
     "from": "von",
     "at": "an",
@@ -29,7 +29,7 @@
   },
   "en": {
     "time_min": "%d min",
-    "time_hour_min": "%dh %02d min",
+    "time_hour_min": "%dh %d min",
     "time_hour": "%dh",
     "from": "from",
     "at": "at",
@@ -57,10 +57,10 @@
   },
   "cy": {
     "time_min": "%d mun",
-    "time_hour_min": "%d awr %02d mun",
+    "time_hour_min": "%d awr %d mun",
     "time_hour": "%d awr",
     "from": "o",
-    "at": "tuag at",
+    "at": "ar",
     "now": "ynawr",
     "in_min": "mewn %s",
     "next_min": "a mewn %s",

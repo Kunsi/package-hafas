@@ -212,16 +212,25 @@
             ["de", "Deutch"],
             ["en", "English"],
             ["cy", "Cymraeg"]
-        ]
+        ],
+        "ui_width": 3
     }, {
         "name": "timezone",
         "title": "Timezone",
         "type": "string",
-        "default": "Europe/Berlin"
+        "default": "Europe/Berlin",
+        "ui_width": 3
     }, {
         "name": "nre_powered",
-        "title": "Show National Rail Equiries Logo",
+        "title": "Show National Rail Enquiries Logo",
         "type": "boolean",
-        "default": false
+        "default": false,
+        "ui_width": 3
+    }, {
+        "name": "margin",
+        "title": "Outside margin",
+        "type": "integer",
+        "default": 0,
+        "ui_width": 3
     }]
 }
