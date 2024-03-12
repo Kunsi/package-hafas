@@ -421,7 +421,11 @@ local function draw(real_width, real_height)
       local nre_width, nre_height = nre_powered_logo:size()
       local nre_height_scaled = 75
       local nre_width_scaled = nre_width * (nre_height_scaled / nre_height)
-      nre_powered_logo:draw(real_width - nre_width_scaled, real_height - nre_height_scaled, real_width, real_height)
+      nre_powered_logo:draw(
+        real_width - nre_width_scaled - CONFIG.margin,
+        real_height - nre_height_scaled - CONFIG.margin,
+        real_width - CONFIG.margin, real_height - CONFIG.margin
+      )
     end
 end
 
