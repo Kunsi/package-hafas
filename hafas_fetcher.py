@@ -35,7 +35,8 @@ class HAFASFetcher:
                         dep.follow = follow
                         break
                 else:
-                    if dep.category == follow.category and dep.destination == follow.destination and dep.id != follow.id:
+                    if dep.category == follow.category and dep.destination == follow.destination and \
+                            dep.operator == follow.operator and dep.id != follow.id:
                         dep.follow = follow
                         break
         self.departures.extend(departures)
@@ -175,6 +176,8 @@ class HAFASFetcher:
                 "symbol": dep.symbol,
                 "time": dep.realtime.astimezone(self.tz).strftime("%H:%M"),
                 "timestamp": Helper.to_unixtimestamp(dep.realtime),
+                "scheduled_time": dep.scheduled.astimezone(self.tz).strftime("%H:%M"),
+                "scheduled_timestamp": Helper.to_unixtimestamp(dep.scheduled),
             }
             departure.update(dep.line_colour)
             out.append(departure)

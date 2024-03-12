@@ -59,13 +59,14 @@ class HAFASEvent:
         else:
             self.category_icon = ""
 
-        scheduled = datetime.strptime(
+        self.scheduled = datetime.strptime(
             data["date"] + " " + data["time"], "%Y-%m-%d %H:%M:%S",
         )
         if data.get("tz", None) is not None:
-            scheduled = scheduled.replace(tzinfo=FixedOffset(data["tz"], ""))
+            self.scheduled = self.scheduled.replace(tzinfo=FixedOffset(data["tz"], ""))
         else:
-            scheduled = scheduled.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
+            self.scheduled = self.scheduled.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
+
         if "rtTime" in data and "rtDate" in data:
             self.realtime = datetime.strptime(
                 data["rtDate"] + " " + data["rtTime"], "%Y-%m-%d %H:%M:%S"
@@ -74,10 +75,10 @@ class HAFASEvent:
                 self.realtime = self.realtime.replace(tzinfo=FixedOffset(data["rtTz"], ""))
             else:
                 self.realtime = self.realtime.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
-            diff = self.realtime - scheduled
+            diff = self.realtime - self.scheduled
             self.delay = int(diff.total_seconds() / 60)
         else:
-            self.realtime = scheduled
+            self.realtime = self.scheduled
             self.delay = -1
 
     def __lt__(self, other):
