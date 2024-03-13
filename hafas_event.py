@@ -80,7 +80,7 @@ class HAFASEvent:
             self.delay = int(diff.total_seconds() / 60)
         else:
             self.realtime = self.scheduled
-            self.delay = -1
+            self.delay = None
 
     def __lt__(self, other):
         assert isinstance(other, HAFASEvent)

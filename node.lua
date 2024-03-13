@@ -250,7 +250,7 @@ local function draw(real_width, real_height)
             if dep.cancelled then
                time_font = CONFIG.realtime_font
                time_colour = CONFIG.realtime_cancelled_colour
-            elseif dep.delay >= 0 then
+            elseif dep.delay ~= json.null then
                time_font = CONFIG.realtime_font
                time_colour = CONFIG.realtime_punctual_colour
                if dep.delay > 0 then
@@ -335,8 +335,10 @@ local function draw(real_width, real_height)
 
             -- operator name
             if CONFIG.show_operator_name and dep.operator_name ~= json.null then
-              symbol_height = symbol_height + text_lower_size
-              text_y = text_y + text_lower_size
+              if #dep.notes ~= 0 or platform ~= "" or not CONFIG.large_minutes then
+                symbol_height = symbol_height + text_lower_size
+                text_y = text_y + text_lower_size
+              end
               CONFIG.second_font:write(
                   text_x,
                   text_y,
@@ -454,9 +456,22 @@ local function draw(real_width, real_height)
                 )
             else
                 local time_width = time_font:width(time, text_lower_size)
+                local scheduled_time_width = time_font:width(dep.scheduled_time, text_lower_size)
                 local time_after_width = CONFIG.time_font:width(" ", text_lower_size)
 
                 text_y_start = text_y_start + text_upper_size
+
+                if dep.delay > 0 or dep.cancelled then
+                  time_font:write(
+                      text_x, text_y_start,
+                      dep.scheduled_time, text_lower_size,
+                      str, stg, stb, 1
+                  )
+                  local text_middle = text_y_start + (text_lower_size / 2)
+                  white:draw(text_x, text_middle, text_x + scheduled_time_width, text_middle + 1)
+                  text_x = text_x + scheduled_time_width + 5
+                end
+
                 time_font:write(
                     text_x,
                     text_y_start, time, text_lower_size,
