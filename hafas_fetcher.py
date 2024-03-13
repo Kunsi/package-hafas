@@ -30,7 +30,7 @@ class HAFASFetcher:
                 if SYMBOL_IS_GROUP[CONFIG["api_provider"]]:
                     if dep.symbol == follow.symbol and (
                             (dep.platform != "" and dep.platform == follow.platform)
-                        or dep.destination == follow.destination
+                            or dep.destination == follow.destination
                     ) and not follow.cancelled:
                         dep.follow = follow
                         break
@@ -94,7 +94,7 @@ class HAFASFetcher:
                 stop=stop_id,
                 minutes=CONFIG["request_hours"] * 60,
                 key=key,
-                language=CONFIG["language"],
+                language=CONFIG["query_language"],
             )
 
             if not self.data_sources == "arrivals":
@@ -111,26 +111,26 @@ class HAFASFetcher:
         for n, ev in enumerate(events):
             for follow in islice(events, n + 1, None):
                 if (
-                    locator(ev) == locator(follow)
-                    and ev.symbol == follow.symbol
-                    and (
+                        locator(ev) == locator(follow)
+                        and ev.symbol == follow.symbol
+                        and (
                         (
-                            ev.stop != follow.stop
-                            and abs(
-                                Helper.to_unixtimestamp(ev.realtime)
-                                - Helper.to_unixtimestamp(follow.realtime)
-                            )
-                            <= 120
+                                ev.stop != follow.stop
+                                and abs(
+                            Helper.to_unixtimestamp(ev.realtime)
+                            - Helper.to_unixtimestamp(follow.realtime)
+                        )
+                                <= 120
                         )
                         or (
-                            ev.stop == follow.stop
-                            and abs(
-                                Helper.to_unixtimestamp(ev.realtime)
-                                - Helper.to_unixtimestamp(follow.realtime)
-                            )
-                            <= 10
+                                ev.stop == follow.stop
+                                and abs(
+                            Helper.to_unixtimestamp(ev.realtime)
+                            - Helper.to_unixtimestamp(follow.realtime)
                         )
-                    )
+                                <= 10
+                        )
+                )
                 ):
                     follow.duplicate = True
                     break

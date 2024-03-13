@@ -43,7 +43,7 @@ def fetch_stop(stop, endpoint):
             stop=stop,
             minutes=MINUTES,
             key=KEY,
-            language=CONFIG["language"],
+            language=CONFIG["query_language"],
         )
     )
     r.raise_for_status()

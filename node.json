@@ -195,11 +195,11 @@
         "default": true,
         "hint": "if deselected, lines will appear as grey box with white text"
     }, {
-        "name": "nre_powered",
-        "title": "Show National Rail Enquiries Logo",
+        "name": "show_provider_logo",
+        "title": "Show provider Logo",
         "type": "boolean",
         "default": false,
-        "ui_width": 8
+        "ui_width": 4
     },{
         "title": "Hours to request",
         "ui_width": 4,
@@ -225,6 +225,17 @@
         "default": "de",
         "name": "language",
         "title": "Display Language",
+        "type": "select",
+        "options": [
+            ["de", "Deutch"],
+            ["en", "English"],
+            ["cy", "Cymraeg"]
+        ],
+        "ui_width": 4
+    }, {
+        "default": "de",
+        "name": "query_language",
+        "title": "Query Language",
         "type": "select",
         "options": [
             ["de", "Deutch"],

@@ -73,11 +73,16 @@ categories["u_bahn"] = resource.load_image("u_bahn.png")
 categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
-nre_powered_logo = resource.load_image{
-  file = "NRE_Powered_logo.png";
-  mimap = true;
-  nearest = true;
-}
+local provider_logo = nil
+if CONFIG.show_provider_logo then
+  if CONFIG.api_provider == "tfemf" then
+    provider_logo = resource.load_image {
+      file = "NRE_Powered_logo.png";
+      mimap = true;
+      nearest = true;
+    }
+  end
+end
 
 local function format_seconds(seconds)
     local minutes = math.floor(seconds / 60)
@@ -109,7 +114,7 @@ local function draw(real_width, real_height)
     local margin_bottom = CONFIG.line_height * 0.2
 
     local available_height = real_height - CONFIG.margin
-    if CONFIG.nre_powered then
+    if provider_logo then
       available_height = available_height - 150
     end
 
@@ -212,15 +217,23 @@ local function draw(real_width, real_height)
             if number_of_stops > 1 then
                 platform = preposition .. " " .. dep.stop
                 if dep.platform ~= json.null then
-                    platform = platform .. ", " ..
-                      translations[CONFIG.language].platform_types[dep.platform.type] ..
-                      " " .. dep.platform.value
+                    if dep.platform.type ~= json.null and dep.platform.type ~= "" then
+                        platform = platform .. ", " ..
+                          translations[CONFIG.language].platform_types[dep.platform.type] ..
+                          " " .. dep.platform.value
+                    else
+                        platform = platform .. ", " .. dep.platform.value
+                    end
                 end
             else
                 if dep.platform ~= json.null then
-                    platform = preposition .. " " ..
-                      translations[CONFIG.language].platform_types[dep.platform.type] ..
-                      " " .. dep.platform.value
+                    if dep.platform.type ~= json.null and dep.platform.type ~= "" then
+                        platform = preposition .. " " ..
+                          translations[CONFIG.language].platform_types[dep.platform.type] ..
+                          " " .. dep.platform.value
+                    else
+                        platform = preposition .. " " .. dep.platform.value
+                    end
                 end
             end
 
@@ -498,13 +511,13 @@ local function draw(real_width, real_height)
         )
     end
 
-    if CONFIG.nre_powered then
-      local nre_width, nre_height = nre_powered_logo:size()
-      local nre_height_scaled = 75
-      local nre_width_scaled = nre_width * (nre_height_scaled / nre_height)
-      nre_powered_logo:draw(
-        real_width - nre_width_scaled - CONFIG.margin,
-        real_height - nre_height_scaled - CONFIG.margin,
+    if provider_logo then
+      local logo_width, logo_height = provider_logo:size()
+      local logo_height_scaled = 75
+      local logo_width_scaled = logo_width * (logo_height_scaled / logo_height)
+      provider_logo:draw(
+        real_width - logo_width_scaled - CONFIG.margin,
+        real_height - logo_height_scaled - CONFIG.margin,
         real_width - CONFIG.margin, real_height - CONFIG.margin
       )
     end

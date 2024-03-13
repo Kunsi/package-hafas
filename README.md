@@ -20,7 +20,3 @@ json files somewhere else.
 
 In info-beamer just input the path to the cached json files. Authentication
 is not supported as of now.
-
-## Emoji
-
-Iconography from [Mutant Standard Emoji](https://mutant.tech).

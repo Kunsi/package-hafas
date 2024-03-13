@@ -66,7 +66,7 @@ class HAFASEvent:
         if data.get("tz", None) is not None:
             self.scheduled = self.scheduled.replace(tzinfo=FixedOffset(data["tz"], ""))
         else:
-            self.scheduled = self.scheduled.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
+            self.scheduled = pytz.timezone(CONFIG["timezone"]).localize(self.scheduled)
 
         if "rtTime" in data and "rtDate" in data:
             self.realtime = datetime.strptime(
@@ -75,7 +75,7 @@ class HAFASEvent:
             if data.get("rtTz", None) is not None:
                 self.realtime = self.realtime.replace(tzinfo=FixedOffset(data["rtTz"], ""))
             else:
-                self.realtime = self.realtime.replace(tzinfo=pytz.timezone(CONFIG["timezone"]))
+                self.realtime = pytz.timezone(CONFIG["timezone"]).localize(self.realtime)
             diff = self.realtime - self.scheduled
             self.delay = int(diff.total_seconds() / 60)
         else:
