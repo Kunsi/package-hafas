@@ -76,7 +76,7 @@ categories["bus"] = resource.load_image("bus.png")
 local provider_logo = nil
 if CONFIG.show_provider_logo then
   if CONFIG.api_provider == "tfemf" then
-    provider_logo = resource.load_image {
+    provider_logo = resource.load_image{
       file = "NRE_Powered_logo.png";
       mimap = true;
       nearest = true;
