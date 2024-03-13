@@ -30,6 +30,7 @@ class HAFASEvent:
         self.follow = None
 
         self.id = data["JourneyDetailRef"]["ref"]
+        self.cancelled = data.get("cancelled", False)
 
         for product in data["Product"]:
             if product.get("name") and product.get("catCode"):
@@ -171,15 +172,19 @@ class HAFASEvent:
         notes = []
         if "Notes" in self.json:
             for note in self.json["Notes"]["Note"]:
+                note_type = note["type"].upper()
                 # Apparently:
                 # A: Accessibility Information
                 # I: Internal Stuff
                 # R: Travel information ("faellt aus" etc.)
-                if note["type"].upper() in ("R",):
-                    notes.append(note["value"])
-        if notes:
-            return '  |  '.join(notes)
-        return None
+                # P: Cancellation reason
+                # D: Late running reason
+                if note_type in ("R", "P", "D"):
+                    notes.append({
+                        "type": note_type,
+                        "text": note["value"]
+                    })
+        return notes
 
     @property
     def stop(self):
@@ -187,10 +192,13 @@ class HAFASEvent:
 
     @property
     def platform(self):
-        if "platform" in self.json:
+        if "rtPlatform" in self.json or "platform" in self.json:
+            platform = self.json["rtPlatform"] if "rtPlatform" in self.json else self.json["platform"]
+            if platform.get("hidden", False):
+                return None
             return {
-                "type": self.json["platform"].get("type", "X"),
-                "value": self.json["platform"].get("text", ""),
+                "type": platform.get("type", "X"),
+                "value": platform.get("text", ""),
             }
         if "track" in self.json:
             return {

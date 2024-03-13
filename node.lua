@@ -101,7 +101,6 @@ local function draw(real_width, real_height)
         1
     )
     local now = unixnow()
-    local y = CONFIG.margin
     local now_for_fade = now + (CONFIG.offset * 60)
     local stops = {}
     local number_of_stops = 0
@@ -109,25 +108,36 @@ local function draw(real_width, real_height)
     local line_height = CONFIG.line_height
     local margin_bottom = CONFIG.line_height * 0.2
 
-    local available_height = real_height - (2 * CONFIG.margin)
+    local available_height = real_height - CONFIG.margin
     if CONFIG.nre_powered then
-      available_height = available_height - 100
+      available_height = available_height - 150
     end
 
+    local start_y = CONFIG.margin
     if CONFIG.header ~= "" then
-      available_height = available_height - line_height
-      y = y + line_height + margin_bottom
+      start_y = start_y + line_height + margin_bottom
     end
+    local y = start_y
 
     local has_departures = false
 
     local y_dec = 0
     local fade_timestamp = 0
     for idx, dep in ipairs(events) do
-        if dep.timestamp > now_for_fade - fadeout then
+        if dep.timestamp > (now_for_fade - fadeout) then
             if now_for_fade > dep.timestamp then
                 y_dec = y_dec + line_height + margin_bottom
-                fade_timestamp = dep.timestamp
+                if fade_timestamp == 0 then
+                  fade_timestamp = dep.timestamp
+                else
+                  fade_timestamp = math.min(fade_timestamp, dep.timestamp)
+                end
+                if #dep.notes ~= 0 then
+                    y_dec = y_dec + (line_height * 0.3)
+                end
+                if CONFIG.show_operator_name and dep.operator_name ~= json.null then
+                    y_dec = y_dec + (line_height * 0.3)
+                end
             end
         end
         if not stops[dep.stop] then
@@ -136,14 +146,14 @@ local function draw(real_width, real_height)
         stops[dep.stop] = true
     end
     if y_dec ~= 0 then
-      y = y - (y_dec * (now_for_fade - fade_timestamp) / fadeout)
+      y = y - (y_dec * ((now_for_fade - fade_timestamp) / fadeout))
     end
 
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             has_departures = true
-            if y < 0 and dep.timestamp >= now_for_fade then
-                y = 0
+            if y < start_y and dep.timestamp >= now_for_fade then
+                y = start_y
             end
 
             local time = dep.time
@@ -176,7 +186,9 @@ local function draw(real_width, real_height)
                     append = string.format(translations[CONFIG.language].next_min, format_seconds(dep.next_timestamp - now))
                 end
             elseif remaining < (11 + CONFIG.offset) then
-                time = string.format(translations[CONFIG.language].in_min, format_seconds(dep.timestamp - now))
+                if not dep.cancelled then
+                  time = string.format(translations[CONFIG.language].in_min, format_seconds(dep.timestamp - now))
+                end
                 if remaining < (1 + CONFIG.offset) then
                     if now % 2 < 1 then
                         time = "*" .. time
@@ -191,6 +203,10 @@ local function draw(real_width, real_height)
                 if dep.next_time and dep.next_timestamp > 10 then
                     append = string.format(translations[CONFIG.language].next_timestamp, dep.next_time)
                 end
+            end
+
+            if dep.cancelled then
+              time = translations[CONFIG.language].cancelled
             end
 
             if number_of_stops > 1 then
@@ -217,7 +233,10 @@ local function draw(real_width, real_height)
 
             local time_colour = CONFIG.time_colour
             local scheduled_time_color = CONFIG.time_colour
-            if dep.delay >= 0 then
+            if dep.cancelled then
+               time_font = CONFIG.realtime_font
+               time_colour = CONFIG.realtime_cancelled_colour
+            elseif dep.delay >= 0 then
                time_font = CONFIG.realtime_font
                time_colour = CONFIG.realtime_punctual_colour
                if dep.delay > 0 then
@@ -252,30 +271,10 @@ local function draw(real_width, real_height)
             local text_y_start = text_y
             text_y = text_y + text_upper_size
 
-            -- operator name
-            if CONFIG.show_operator_name then
-              if dep.operator_name ~= json.null then
-                if platform ~= "" or not CONFIG.large_minutes then
-                  symbol_height = symbol_height + text_lower_size
-                  text_y = text_y + text_lower_size
-                end
-                CONFIG.second_font:write(
-                    text_x,
-                    text_y,
-                    string.format(translations[CONFIG.language].operator_name, dep.operator_name),
-                    text_lower_size,
-                    CONFIG.second_colour.r,
-                    CONFIG.second_colour.g,
-                    CONFIG.second_colour.b,
-                    CONFIG.second_colour.a
-                )
-              end
-            end
-
             -- third line (if exists)
             -- needs to go first, because we use the background colour
             -- to hide the text outside the view area
-            if dep.notes ~= json.null then
+            if #dep.notes ~= 0 then
                 -- scroller position
                 local max_scroller_width = math.min(
                     real_width,
@@ -301,18 +300,39 @@ local function draw(real_width, real_height)
                     text_y = text_y + text_lower_size
                 end
 
+                local notes_text = ""
+                for idx, note in ipairs(dep.notes) do
+                    notes_text = notes_text .. translations[CONFIG.language].note_types[note.type] .. note.text .. " "
+                end
+
                 -- place text
                 scrolling_text(
                     dep.id,
                     text_x, text_y,
                     max_scroller_width, text_y + text_lower_size,
-                    dep.notes,
+                    notes_text,
                     CONFIG.second_font,
                     CONFIG.second_colour.r,
                     CONFIG.second_colour.g,
                     CONFIG.second_colour.b,
                     CONFIG.second_colour.a
                 )
+            end
+
+            -- operator name
+            if CONFIG.show_operator_name and dep.operator_name ~= json.null then
+              symbol_height = symbol_height + text_lower_size
+              text_y = text_y + text_lower_size
+              CONFIG.second_font:write(
+                  text_x,
+                  text_y,
+                  string.format(translations[CONFIG.language].operator_name, dep.operator_name),
+                  text_lower_size,
+                  CONFIG.second_colour.r,
+                  CONFIG.second_colour.g,
+                  CONFIG.second_colour.b,
+                  CONFIG.second_colour.a
+              )
             end
 
             -- vehicle type
@@ -380,7 +400,7 @@ local function draw(real_width, real_height)
                     text_y_start, time, text_upper_size,
                     tr, tg, tb, 1
                 )
-                if dep.delay > 0 then
+                if dep.delay > 0 or dep.cancelled then
                   time_font:write(
                       real_width - time_width - scheduled_time_width - CONFIG.margin - 5,
                       text_y_start + (text_upper_size - text_lower_size), dep.scheduled_time, text_lower_size,

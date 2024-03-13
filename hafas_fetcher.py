@@ -31,12 +31,12 @@ class HAFASFetcher:
                     if dep.symbol == follow.symbol and (
                             (dep.platform != "" and dep.platform == follow.platform)
                         or dep.destination == follow.destination
-                    ):
+                    ) and not follow.cancelled:
                         dep.follow = follow
                         break
                 else:
                     if dep.category == follow.category and dep.destination == follow.destination and \
-                            dep.operator == follow.operator and dep.id != follow.id:
+                            dep.operator == follow.operator and dep.id != follow.id and not follow.cancelled:
                         dep.follow = follow
                         break
         self.departures.extend(departures)
@@ -178,6 +178,7 @@ class HAFASFetcher:
                 "timestamp": Helper.to_unixtimestamp(dep.realtime),
                 "scheduled_time": dep.scheduled.astimezone(self.tz).strftime("%H:%M"),
                 "scheduled_timestamp": Helper.to_unixtimestamp(dep.scheduled),
+                "cancelled": dep.cancelled,
             }
             departure.update(dep.line_colour)
             out.append(departure)

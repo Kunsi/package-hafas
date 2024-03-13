@@ -97,18 +97,25 @@
         "hint": "Font to use for times when real-time information is available"
     }, {
         "title": "Real-Time Colour (on time)",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "realtime_punctual_colour",
         "type": "color",
         "default": [1,1,1,1],
         "hint": "Colour to use for times where real-time information is available and the service is on-time"
     }, {
         "title": "Real-Time Colour (delayed)",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "realtime_delayed_colour",
         "type": "color",
         "default": [1,1,1,1],
         "hint": "Colour to use for times where real-time information is available and the service is delayed"
+    }, {
+        "title": "Real-Time Colour (cancelled)",
+        "ui_width": 2,
+        "name": "realtime_cancelled_colour",
+        "type": "color",
+        "default": [1,1,1,1],
+        "hint": "Colour to use for when the service is cancelled"
     }, {
         "title": "Background Colour",
         "ui_width": 4,
