@@ -73,6 +73,7 @@ categories["u_bahn"] = resource.load_image("u_bahn.png")
 categories["tram"] = resource.load_image("tram.png")
 categories["bus"] = resource.load_image("bus.png")
 
+local provider_logo_height = 75
 local provider_logo = nil
 if CONFIG.show_provider_logo then
   if CONFIG.api_provider == "tfemf" then
@@ -115,7 +116,7 @@ local function draw(real_width, real_height)
 
     local available_height = real_height - CONFIG.margin
     if provider_logo then
-      available_height = available_height - 150
+      available_height = available_height - (provider_logo_height * 2)
     end
 
     local start_y = CONFIG.margin
@@ -513,11 +514,10 @@ local function draw(real_width, real_height)
 
     if provider_logo then
       local logo_width, logo_height = provider_logo:size()
-      local logo_height_scaled = 75
-      local logo_width_scaled = logo_width * (logo_height_scaled / logo_height)
+      local logo_width_scaled = logo_width * (provider_logo_height / logo_height)
       provider_logo:draw(
         real_width - logo_width_scaled - CONFIG.margin,
-        real_height - logo_height_scaled - CONFIG.margin,
+        real_height - provider_logo_height - CONFIG.margin,
         real_width - CONFIG.margin, real_height - CONFIG.margin
       )
     end
