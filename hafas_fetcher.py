@@ -17,6 +17,7 @@ class HAFASFetcher:
         self.departures = []
         self.arrivals = []
         self.events = []
+        self.messages = []
 
     def fetch_and_parse(self, stop_id):
         stop_info = self._fetch(stop_id)
@@ -24,6 +25,13 @@ class HAFASFetcher:
         departures = []
         for dep in stop_info["Departure"]:
             departures.append(HAFASEvent(dep))
+        for msg in stop_info.get("Message", []):
+            if not next(iter(filter(
+                lambda m: ("id" in msg and m.get("id") == msg.get("id")) or
+                          ("externalId" in msg and m.get("externalId") == msg.get("externalId")),
+                self.messages
+            )), None):
+                self.messages.append(msg)
         departures = sorted(departures)
         for n, dep in enumerate(departures):
             for follow in islice(departures, n + 1, None):
@@ -74,6 +82,7 @@ class HAFASFetcher:
         data = {
             "Departure": [],
             "Arrival": [],
+            "Message": [],
         }
 
         if key.startswith("http://") or key.startswith("https://"):
@@ -88,6 +97,7 @@ class HAFASFetcher:
                 data["Departure"] = payload["Departure"]
             if not self.data_sources == "departures":
                 data["Arrival"] = payload["Arrival"]
+            data["Message"] = payload.get("Message", [])
         else:
             url = lambda ep: API_MAPPING[CONFIG["api_provider"]].format(
                 endpoint=ep,
@@ -100,9 +110,11 @@ class HAFASFetcher:
             if not self.data_sources == "arrivals":
                 payload = self._fetch_url(stop_id, url("departureBoard"))
                 data["Departure"] = payload["Departure"]
+                data["Message"].extend(payload.get("Message", []))
             if not self.data_sources == "departures":
                 payload = self._fetch_url(stop_id, url("arrivalBoard"))
                 data["Arrival"] = payload["Arrival"]
+                data["Message"].extend(payload.get("Message", []))
 
         return data
 
@@ -151,7 +163,10 @@ class HAFASFetcher:
 
     def write_json(self):
         log("writing {} events to json".format(len(self.events)))
-        out = []
+        out = {
+            "departures": [],
+            "messages": [],
+        }
         for dep in self.events:
             departure = {
                 "category": dep.category,
@@ -181,6 +196,11 @@ class HAFASFetcher:
                 "cancelled": dep.cancelled,
             }
             departure.update(dep.line_colour)
-            out.append(departure)
+            out["departures"].append(departure)
+        for msg in self.messages:
+            out["messages"].append({
+                "text": msg["text"],
+                "id": msg.get("id", msg.get("externalId")),
+            })
         with file("events.json", "wb") as f:
             f.write(json.dumps(out, ensure_ascii=False).encode("utf8"))

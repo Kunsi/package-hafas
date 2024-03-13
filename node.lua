@@ -123,13 +123,18 @@ local function draw(real_width, real_height)
     if CONFIG.header ~= "" then
       start_y = start_y + line_height + margin_bottom
     end
+
     local y = start_y
+
+    for idx, msg in ipairs(events.messages) do
+       y = y + (line_height * 0.5) + margin_bottom
+    end
 
     local has_departures = false
 
     local y_dec = 0
     local fade_timestamp = 0
-    for idx, dep in ipairs(events) do
+    for idx, dep in ipairs(events.departures) do
         if dep.timestamp > (now_for_fade - fadeout) then
             if now_for_fade > dep.timestamp then
                 y_dec = y_dec + line_height + margin_bottom
@@ -155,7 +160,7 @@ local function draw(real_width, real_height)
       y = y - (y_dec * ((now_for_fade - fade_timestamp) / fadeout))
     end
 
-    for idx, dep in ipairs(events) do
+    for idx, dep in ipairs(events.departures) do
         if dep.timestamp > now_for_fade - fadeout then
             has_departures = true
             if y < start_y and dep.timestamp >= now_for_fade then
@@ -525,6 +530,23 @@ local function draw(real_width, real_height)
             CONFIG.heading_colour.b,
             CONFIG.heading_colour.a
         )
+    end
+
+    for idx, msg in ipairs(events.messages) do
+      local text_height = (line_height * 0.5) + margin_bottom
+      local text_y = start_y + (text_height * (idx - 1))
+      bg:draw(0, text_y, real_width, text_y + text_height)
+      scrolling_text(
+        msg.id,
+        0, text_y,
+        real_width, text_y + (line_height * 0.5),
+        msg.text,
+        CONFIG.second_font,
+        CONFIG.second_colour.r,
+        CONFIG.second_colour.g,
+        CONFIG.second_colour.b,
+        CONFIG.second_colour.a
+      )
     end
 
     if provider_logo then
