@@ -416,7 +416,7 @@ local function draw(real_width, real_height)
                     text_y_start, time, text_upper_size,
                     tr, tg, tb, 1
                 )
-                if dep.delay > 0 or dep.cancelled then
+                if (dep.delay ~= json.null and dep.delay > 0) or dep.cancelled then
                   time_font:write(
                       real_width - time_width - scheduled_time_width - CONFIG.margin - 5,
                       text_y_start + (text_upper_size - text_lower_size), dep.scheduled_time, text_lower_size,
@@ -461,7 +461,7 @@ local function draw(real_width, real_height)
 
                 text_y_start = text_y_start + text_upper_size
 
-                if dep.delay > 0 or dep.cancelled then
+                if (dep.delay ~= json.null and dep.delay > 0) or dep.cancelled then
                   time_font:write(
                       text_x, text_y_start,
                       dep.scheduled_time, text_lower_size,

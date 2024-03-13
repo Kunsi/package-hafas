@@ -3,14 +3,15 @@ import hashlib
 import pytz
 from datetime import datetime, timedelta, tzinfo
 from helper import Helper
-from hosted import CONFIG, log
+from hosted import CONFIG
 from mapping import CATEGORY_MAPPING, COLOUR_MAPPING, OPERATOR_LABEL_MAPPING
 
 REMOVE = re.escape(CONFIG["remove_string"].strip()) if CONFIG["remove_string"] else None
 
+
 class FixedOffset(tzinfo):
     def __init__(self, offset, name):
-        self.__offset = timedelta(minutes = offset)
+        self.__offset = timedelta(minutes=offset)
         self.__name = name
 
     def utcoffset(self, _dt):
@@ -41,7 +42,7 @@ class HAFASEvent:
 
                 symbol = product["name"]
                 for regex, replacement in OPERATOR_LABEL_MAPPING.get(
-                    CONFIG["api_provider"], {}
+                        CONFIG["api_provider"], {}
                 ).items():
                     symbol = re.sub(regex, replacement, symbol)
                 self.symbol = symbol
@@ -92,9 +93,9 @@ class HAFASEvent:
         else:
             if REMOVE:
                 for possible_match in (
-                    "^(" + REMOVE + "[, -]+)",
-                    "( *\(" + REMOVE + "\))",
-                    "(" + REMOVE + " +)",
+                        "^(" + REMOVE + "[, -]+)",
+                        "( *\(" + REMOVE + "\))",
+                        "(" + REMOVE + " +)",
                 ):
                     if re.search(possible_match, self.json[key].strip()):
                         return re.sub(
@@ -116,11 +117,11 @@ class HAFASEvent:
     @property
     def ignore_destination(self):
         if (
-            CONFIG["ignore_destination"]
-            and self.destination
-            and re.search(
-                CONFIG["ignore_destination"], self.destination, flags=re.IGNORECASE
-            )
+                CONFIG["ignore_destination"]
+                and self.destination
+                and re.search(
+            CONFIG["ignore_destination"], self.destination, flags=re.IGNORECASE
+        )
         ):
             return True
         return False
@@ -130,9 +131,9 @@ class HAFASEvent:
         provider = CONFIG["api_provider"]
 
         if (
-            provider in COLOUR_MAPPING
-            and self.operator in COLOUR_MAPPING[provider]
-            and self.symbol in COLOUR_MAPPING[provider][self.operator]
+                provider in COLOUR_MAPPING
+                and self.operator in COLOUR_MAPPING[provider]
+                and self.symbol in COLOUR_MAPPING[provider][self.operator]
         ):
             (r, g, b), (font_r, font_g, font_b) = COLOUR_MAPPING[provider][
                 self.operator
