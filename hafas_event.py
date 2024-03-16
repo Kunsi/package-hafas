@@ -148,7 +148,7 @@ class HAFASEvent:
             if note["type"].upper() in ("R",):
                 notes.append(note["value"])
         if notes:
-            return '  |  '.join(notes)
+            return "  |  ".join(notes)
         return None
 
     @property
