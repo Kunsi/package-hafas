@@ -1,6 +1,6 @@
 {
     "name": "HAFAS Abfahrtsplan",
-    "author": "kunsi, multi (forked from sophie, lara, dividuum)",
+    "author": "kunsi, multi, Q (forked from sophie, lara, dividuum)",
     "desc": "Generic HAFAS departure monitor (using REST API)",
     "nesting": {
         "parents": ["top-level"],

@@ -4,5 +4,3 @@ config.json
 *.pyc
 .venv
 *.swp
-#*.ttf
-*.TTF

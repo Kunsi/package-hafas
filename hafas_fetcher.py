@@ -1,4 +1,5 @@
 import json
+import pytz
 from itertools import islice
 
 from requests import get
@@ -6,15 +7,17 @@ from requests import get
 from hafas_event import HAFASEvent
 from helper import Helper, log
 from hosted import CONFIG
-from mapping import API_MAPPING
+from mapping import API_MAPPING, SYMBOL_IS_GROUP
 
 
 class HAFASFetcher:
     def __init__(self):
         self.data_sources = CONFIG["data_sources"]
+        self.tz = pytz.timezone(CONFIG["timezone"])
         self.departures = []
         self.arrivals = []
         self.events = []
+        self.messages = []
 
     def fetch_and_parse(self, stop_id):
         stop_info = self._fetch(stop_id)
@@ -22,15 +25,28 @@ class HAFASFetcher:
         departures = []
         for dep in stop_info["Departure"]:
             departures.append(HAFASEvent(dep))
+        for msg in stop_info.get("Message", []):
+            if not next(iter(filter(
+                lambda m: ("id" in msg and m.get("id") == msg.get("id")) or
+                          ("externalId" in msg and m.get("externalId") == msg.get("externalId")),
+                self.messages
+            )), None):
+                self.messages.append(msg)
         departures = sorted(departures)
         for n, dep in enumerate(departures):
             for follow in islice(departures, n + 1, None):
-                if dep.symbol == follow.symbol and (
-                    (dep.platform != "" and dep.platform == follow.platform)
-                    or dep.destination == follow.destination
-                ):
-                    dep.follow = follow
-                    break
+                if SYMBOL_IS_GROUP[CONFIG["api_provider"]]:
+                    if dep.symbol == follow.symbol and (
+                            (dep.platform != "" and dep.platform == follow.platform)
+                            or dep.destination == follow.destination
+                    ) and not follow.cancelled:
+                        dep.follow = follow
+                        break
+                else:
+                    if dep.category == follow.category and dep.destination == follow.destination and \
+                            dep.operator == follow.operator and dep.id != follow.id and not follow.cancelled:
+                        dep.follow = follow
+                        break
         self.departures.extend(departures)
 
         arrivals = []
@@ -66,6 +82,7 @@ class HAFASFetcher:
         data = {
             "Departure": [],
             "Arrival": [],
+            "Message": [],
         }
 
         if key.startswith("http://") or key.startswith("https://"):
@@ -80,20 +97,24 @@ class HAFASFetcher:
                 data["Departure"] = payload["Departure"]
             if not self.data_sources == "departures":
                 data["Arrival"] = payload["Arrival"]
+            data["Message"] = payload.get("Message", [])
         else:
             url = lambda ep: API_MAPPING[CONFIG["api_provider"]].format(
                 endpoint=ep,
                 stop=stop_id,
                 minutes=CONFIG["request_hours"] * 60,
                 key=key,
+                language=CONFIG["query_language"],
             )
 
             if not self.data_sources == "arrivals":
                 payload = self._fetch_url(stop_id, url("departureBoard"))
                 data["Departure"] = payload["Departure"]
+                data["Message"].extend(payload.get("Message", []))
             if not self.data_sources == "departures":
                 payload = self._fetch_url(stop_id, url("arrivalBoard"))
                 data["Arrival"] = payload["Arrival"]
+                data["Message"].extend(payload.get("Message", []))
 
         return data
 
@@ -102,26 +123,26 @@ class HAFASFetcher:
         for n, ev in enumerate(events):
             for follow in islice(events, n + 1, None):
                 if (
-                    locator(ev) == locator(follow)
-                    and ev.symbol == follow.symbol
-                    and (
+                        locator(ev) == locator(follow)
+                        and ev.symbol == follow.symbol
+                        and (
                         (
-                            ev.stop != follow.stop
-                            and abs(
-                                Helper.to_unixtimestamp(ev.realtime)
-                                - Helper.to_unixtimestamp(follow.realtime)
-                            )
-                            <= 120
+                                ev.stop != follow.stop
+                                and abs(
+                            Helper.to_unixtimestamp(ev.realtime)
+                            - Helper.to_unixtimestamp(follow.realtime)
+                        )
+                                <= 120
                         )
                         or (
-                            ev.stop == follow.stop
-                            and abs(
-                                Helper.to_unixtimestamp(ev.realtime)
-                                - Helper.to_unixtimestamp(follow.realtime)
-                            )
-                            <= 10
+                                ev.stop == follow.stop
+                                and abs(
+                            Helper.to_unixtimestamp(ev.realtime)
+                            - Helper.to_unixtimestamp(follow.realtime)
                         )
-                    )
+                                <= 10
+                        )
+                )
                 ):
                     follow.duplicate = True
                     break
@@ -142,7 +163,10 @@ class HAFASFetcher:
 
     def write_json(self):
         log("writing {} events to json".format(len(self.events)))
-        out = []
+        out = {
+            "departures": [],
+            "messages": [],
+        }
         for dep in self.events:
             departure = {
                 "category": dep.category,
@@ -154,20 +178,29 @@ class HAFASFetcher:
                 "icon": dep.category_icon,
                 "id": dep.id,
                 "next_time": (
-                    dep.follow.realtime.strftime("%H:%M") if dep.follow else ""
+                    dep.follow.realtime.astimezone(self.tz).strftime("%H:%M") if dep.follow else ""
                 ),
                 "next_timestamp": (
                     Helper.to_unixtimestamp(dep.follow.realtime) if dep.follow else 0
                 ),
                 "notes": dep.notes,
                 "operator": dep.operator,
+                "operator_name": dep.operatorName,
                 "platform": dep.platform,
                 "stop": dep.stop,
                 "symbol": dep.symbol,
-                "time": dep.realtime.strftime("%H:%M"),
+                "time": dep.realtime.astimezone(self.tz).strftime("%H:%M"),
                 "timestamp": Helper.to_unixtimestamp(dep.realtime),
+                "scheduled_time": dep.scheduled.astimezone(self.tz).strftime("%H:%M"),
+                "scheduled_timestamp": Helper.to_unixtimestamp(dep.scheduled),
+                "cancelled": dep.cancelled,
             }
             departure.update(dep.line_colour)
-            out.append(departure)
+            out["departures"].append(departure)
+        for msg in self.messages:
+            out["messages"].append({
+                "text": msg["text"],
+                "id": msg.get("id", msg.get("externalId")),
+            })
         with file("events.json", "wb") as f:
             f.write(json.dumps(out, ensure_ascii=False).encode("utf8"))

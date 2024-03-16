@@ -31,12 +31,11 @@ silkscreen.ttf:
 
     <http://kottke.org/plus/type/silkscreen/>
 
-bus.png, high_speed_rail.png, low_speed_rail.png, tram.png, u_bahn.png:
-
-    Part of twemoji <https://github.com/twitter/twemoji>
-    Licensed under CC-BY 4.0
-
-s_bahn.png
+s_bahn.png:
 
     <https://commons.wikimedia.org/wiki/File:S-Bahn-Logo.svg>
     Public Domain
+
+Emoji:
+
+    Iconography from Mutant Standard Emoji <https://mutant.tech>

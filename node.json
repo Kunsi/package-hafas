@@ -15,10 +15,11 @@
         "options": [
             ["vbb", "VBB Produktivsystem (Verkehrsverbund Berlin-Brandenburg)"],
             ["vbb-test", "VBB Testsystem (Verkehrsverbund Berlin-Brandenburg)"],
-            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"]
+            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"],
+            ["tfemf", "Trafnidieath EMF / Transport for EMF"]
         ]
     }, {
-        "title": "API-Key oder Cache-URL",
+        "title": "API-Key or Cache-URL",
         "ui_width": 8,
         "name": "api_key",
         "type": "string",
@@ -37,7 +38,7 @@
         "name": "requests_max_per_day",
         "type": "integer",
         "default": 4900,
-        "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server"
+        "hint": "maximum number of requests done to API (per device and day) - will get ignored if using a caching server; specify -1 for no limit"
     }, {
         "title": "Fonts and colours",
         "type": "section"
@@ -96,24 +97,36 @@
         "hint": "Font to use for times when real-time information is available"
     }, {
         "title": "Real-Time Colour (on time)",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "realtime_punctual_colour",
         "type": "color",
         "default": [1,1,1,1],
         "hint": "Colour to use for times where real-time information is available and the service is on-time"
     }, {
         "title": "Real-Time Colour (delayed)",
-        "ui_width": 3,
+        "ui_width": 2,
         "name": "realtime_delayed_colour",
         "type": "color",
         "default": [1,1,1,1],
         "hint": "Colour to use for times where real-time information is available and the service is delayed"
+    }, {
+        "title": "Real-Time Colour (cancelled)",
+        "ui_width": 2,
+        "name": "realtime_cancelled_colour",
+        "type": "color",
+        "default": [1,1,1,1],
+        "hint": "Colour to use for when the service is cancelled"
     }, {
         "title": "Background Colour",
         "ui_width": 4,
         "name": "background_colour",
         "type": "color",
         "default": [0,0,0,1]
+    }, {
+        "title": "Header",
+        "name": "header",
+        "type": "string",
+        "default": ""
     }, {
         "title": "Display Options",
         "type": "section"
@@ -162,6 +175,12 @@
         "type": "boolean",
         "default": true
     }, {
+        "title": "Show operator name",
+        "ui_width": 4,
+        "name": "show_operator_name",
+        "type": "boolean",
+        "default": false
+    }, {
         "title": "Large Minutes",
         "ui_width": 4,
         "name": "large_minutes",
@@ -176,11 +195,17 @@
         "default": true,
         "hint": "if deselected, lines will appear as grey box with white text"
     }, {
+        "name": "show_provider_logo",
+        "title": "Show provider Logo",
+        "type": "boolean",
+        "default": false,
+        "ui_width": 4
+    },{
         "title": "Hours to request",
         "ui_width": 4,
         "name": "request_hours",
         "type": "integer",
-        "default": 3,
+        "default": 4,
         "hint": "how many hours of fahrplan to show"
     }, {
         "title": "Time Offset in minutes",
@@ -196,5 +221,39 @@
         "title": "Line Height",
         "ui_width": 4,
         "type": "integer"
+    }, {
+        "default": "de",
+        "name": "language",
+        "title": "Display Language",
+        "type": "select",
+        "options": [
+            ["de", "Deutch"],
+            ["en", "English"],
+            ["cy", "Cymraeg"]
+        ],
+        "ui_width": 4
+    }, {
+        "default": "de",
+        "name": "query_language",
+        "title": "Query Language",
+        "type": "select",
+        "options": [
+            ["de", "Deutch"],
+            ["en", "English"],
+            ["cy", "Cymraeg"]
+        ],
+        "ui_width": 4
+    }, {
+        "name": "timezone",
+        "title": "Timezone",
+        "type": "string",
+        "default": "Europe/Berlin",
+        "ui_width": 4
+    }, {
+        "name": "margin",
+        "title": "Outside margin",
+        "type": "integer",
+        "default": 0,
+        "ui_width": 4
     }]
 }

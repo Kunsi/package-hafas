@@ -1,0 +1,107 @@
+{
+  "de": {
+    "time_min": "%d min",
+    "time_hour_min": "%d std %d min",
+    "time_hour": "%d std",
+    "from": "von",
+    "at": "an",
+    "now": "jetzt",
+    "in_min": "in %s",
+    "next_min": "und in %s",
+    "next_after_min": "und dananch in %s",
+    "next_timestamp": "und wieder %s",
+    "in_the_past": "In der Vergangenheit",
+    "arrival_from": "Ankunft von %s",
+    "operator_name": "Ein Angebot der %s",
+    "no_departures": "Keine Abfahrten",
+    "cancelled": "Fällt aus",
+    "platform_types": {
+      "U": "",
+      "PL": "Gleis",
+      "ST": "Haltestelle",
+      "GA": "Gate",
+      "PI": "Pier",
+      "SL": "Parkplatz",
+      "FL": "Etage",
+      "CI": "Eingang",
+      "CO": "Ausgang",
+      "X": "",
+      "H": ""
+    },
+    "note_types": {
+      "R": "",
+      "D": "Verspätung: ",
+      "P": "Ausfall: "
+    }
+  },
+  "en": {
+    "time_min": "%d min",
+    "time_hour_min": "%dh %d min",
+    "time_hour": "%dh",
+    "from": "from",
+    "at": "at",
+    "now": "now",
+    "in_min": "in %s",
+    "next_min": "and in %s",
+    "next_after_min": "and then in %s",
+    "next_timestamp": "and at %s",
+    "in_the_past": "In the past",
+    "arrival_from": "Arrival from %s",
+    "operator_name": "A %s service",
+    "no_departures": "No upcoming services",
+    "cancelled": "Cancelled",
+    "platform_types": {
+      "U": "",
+      "PL": "platform",
+      "ST": "stop",
+      "GA": "gate",
+      "PI": "pier",
+      "SL": "parking place",
+      "FL": "floor",
+      "CI": "entrance",
+      "CO": "exit",
+      "X": "",
+      "H": ""
+    },
+    "note_types": {
+      "R": "",
+      "D": "Delayed: ",
+      "P": "Cancelled: "
+    }
+  },
+  "cy": {
+    "time_min": "%d mun",
+    "time_hour_min": "%d awr %d mun",
+    "time_hour": "%d awr",
+    "from": "o",
+    "at": "ar",
+    "now": "ynawr",
+    "in_min": "mewn %s",
+    "next_min": "a mewn %s",
+    "next_after_min": "a wedyn mewn %s",
+    "next_timestamp": "ac am %s",
+    "in_the_past": "Yn y gorffennol",
+    "arrival_from": "Cyrrhaeddiad o %s",
+    "operator_name": "Gwasanaeth %s",
+    "no_departures": "Does dim gwasanaethau ar y gorwel",
+    "cancelled": "Wedi'i ganslo",
+    "platform_types": {
+      "U": "",
+      "PL": "blatfform",
+      "ST": "stop",
+      "GA": "giât",
+      "PI": "bier",
+      "SL": "man parcio",
+      "FL": "lawr",
+      "CI": "fynediad",
+      "CO": "allanfa",
+      "X": "",
+      "H": ""
+    },
+    "note_types": {
+      "R": "",
+      "D": "Yn hwyr: ",
+      "P": "Wedi'i ganslo: "
+    }
+  }
+}

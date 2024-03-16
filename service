@@ -1,26 +1,21 @@
 #!/usr/bin/env python
 import traceback
-from datetime import datetime
 from time import sleep
+from datetime import datetime
 from time import time as timestamp
-
-from pytz import timezone, utc
-
+import pytz
 from hafas_fetcher import HAFASFetcher
 from helper import Helper, log
 from hosted import CONFIG, DEVICE, NODE
 
 CONFIG.restart_on_update()
 
-TIMEZONE = "Europe/Berlin"
-
 
 def _now():
-    tz = timezone(TIMEZONE)
+    tz = pytz.timezone(CONFIG["timezone"])
     now = datetime.utcnow()
-    now = now.replace(tzinfo=utc)
+    now = now.replace(tzinfo=pytz.utc)
     now = now.astimezone(tz)
-    now = now.replace(tzinfo=None)
     return now
 
 
@@ -50,17 +45,20 @@ def main():
             ):
                 idle(15)
             else:
-                requests_per_stop = 2 if data_sources == "both" else 1
-                request_count = len(stops) * requests_per_stop
-                sleep_time = max(
-                    86400 / (CONFIG["requests_max_per_day"] / request_count),
-                    30,
-                )
+                if CONFIG["requests_max_per_day"] == -1:
+                    sleep_time = 30
+                else:
+                    requests_per_stop = 2 if data_sources == "both" else 1
+                    request_count = len(stops) * requests_per_stop
+                    sleep_time = max(
+                        86400 / (CONFIG["requests_max_per_day"] / request_count),
+                        30,
+                    )
 
                 idle(sleep_time)
         except Exception:
             traceback.print_exc()
-            sleep(30)
+            sleep(5)
 
 
 if __name__ == "__main__":
