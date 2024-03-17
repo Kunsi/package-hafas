@@ -227,7 +227,7 @@
         "title": "Display Language",
         "type": "select",
         "options": [
-            ["de", "Deutch"],
+            ["de", "Deutsch"],
             ["en", "English"],
             ["cy", "Cymraeg"]
         ],
@@ -238,7 +238,7 @@
         "title": "Query Language",
         "type": "select",
         "options": [
-            ["de", "Deutch"],
+            ["de", "Deutsch"],
             ["en", "English"],
             ["cy", "Cymraeg"]
         ],
