@@ -208,7 +208,7 @@ local function draw(real_width, real_height)
             -- to hide the text outside the view area
             if dep.notes ~= json.null then
                 -- scroller position
-                local max_scroller_width = real_width - text_x - CONFIG.second_font:width(append, text_lower_size) - 20
+                local max_scroller_x = real_width - CONFIG.second_font:width(append, text_lower_size) - 20
                 local scroller_y = text_y + text_upper_size
 
                 if not (platform == "" and CONFIG.large_minutes) then
@@ -228,7 +228,7 @@ local function draw(real_width, real_height)
                 scrolling_text(
                     dep.id,
                     text_x, scroller_y,
-                    max_scroller_width, scroller_y + text_lower_size,
+                    max_scroller_x, scroller_y + text_lower_size,
                     dep.notes,
                     CONFIG.second_font,
                     CONFIG.second_colour.r,
