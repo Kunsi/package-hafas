@@ -208,27 +208,18 @@ local function draw(real_width, real_height)
             -- to hide the text outside the view area
             if dep.notes ~= json.null then
                 -- scroller position
-                local max_scroller_width = math.min(
-                    real_width,
-                    text_x + (real_width/2)
-                )
+                local max_scroller_width = real_width - text_x - CONFIG.second_font:width(append, text_lower_size) - 20
                 local scroller_y = text_y + text_upper_size
 
-                if platform == "" and CONFIG.large_minutes then
+                if not (platform == "" and CONFIG.large_minutes) then
                     --[[
                         If there's no platform information and we're using
                         large minutes, we can display the scrolling text
                         directly below the heading, saving some space.
 
-                        In this case, ensure we're not drawing over the
-                        "append" part of the line.
+                        If not, we need to increase the symbol height
+                        by the height of the scroller.
                     ]]--
-                    max_scroller_width = math.min(
-                        max_scroller_width,
-                        real_width - CONFIG.second_font:width(append, text_lower_size) - 20
-                    )
-                else
-                    -- increase symbol height to account for scrolling text
                     symbol_height = symbol_height + text_lower_size
                     scroller_y = scroller_y + text_lower_size
                 end
