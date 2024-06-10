@@ -99,6 +99,8 @@ local function draw(real_width, real_height)
         stops[dep.stop] = true
     end
 
+    local w_width = CONFIG.line_font:width('w', line_height * 0.5)
+
     for idx, dep in ipairs(events) do
         if dep.timestamp > now_for_fade - fadeout then
             if y < 0 and dep.timestamp >= now_for_fade then
@@ -185,22 +187,22 @@ local function draw(real_width, real_height)
             local text_upper_size = line_height * 0.5
             local text_lower_size = line_height * 0.3
             local symbol_height = text_upper_size + text_lower_size + margin_bottom
-            local symbol_width = 150
+            local symbol_width = w_width*4
 
             if remaining > (10 + CONFIG.offset) then
                 icon_size = icon_size * 0.8
                 text_upper_size = text_upper_size * 0.8
                 text_lower_size = text_lower_size * 0.8
                 symbol_height = symbol_height * 0.8
-                symbol_width = 100
+                symbol_width = w_width*3
             end
 
             local x = 0
-            local text_x = symbol_width + 20
+            local text_x = symbol_width + w_width/2
             local text_y = y + (margin_bottom * 0.5)
 
             if CONFIG.show_vehicle_type then
-                text_x = text_x + icon_size + 20
+                text_x = text_x + icon_size + w_width/2
             end
 
             -- third line (if exists)
@@ -247,7 +249,7 @@ local function draw(real_width, real_height)
                         icon_size, icon_y+icon_size
                     )
                 end
-                x = icon_size + 20
+                x = icon_size + w_width/2
             end
 
             -- line number
