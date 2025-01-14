@@ -1,5 +1,6 @@
 import re
 from datetime import datetime, timedelta
+from hashlib import md5
 
 from helper import Helper
 from hosted import CONFIG
