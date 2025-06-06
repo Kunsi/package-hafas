@@ -77,9 +77,17 @@ class HAFASFetcher:
 
             payload = self._fetch_url(stop_id, url)
             if not self.data_sources == "arrivals":
-                data["Departure"] = payload["Departure"]
+                if "Departure" in payload:
+                    data["Departure"] = payload["Departure"]
+                else:
+                    log("Stop {stop_id} did not return any departures!".format(stop_id))
+                    data["Departure"] = []
             if not self.data_sources == "departures":
-                data["Arrival"] = payload["Arrival"]
+                if "Arrival" in payload:
+                    data["Arrival"] = payload["Arrival"]
+                else:
+                    log("Stop {stop_id} did not return any arrivals!".format(stop_id))
+                    data["Arrival"] = []
         else:
             url = lambda ep: API_MAPPING[CONFIG["api_provider"]].format(
                 endpoint=ep,
@@ -90,10 +98,18 @@ class HAFASFetcher:
 
             if not self.data_sources == "arrivals":
                 payload = self._fetch_url(stop_id, url("departureBoard"))
-                data["Departure"] = payload["Departure"]
+                if "Departure" in payload:
+                    data["Departure"] = payload["Departure"]
+                else:
+                    log("Stop {stop_id} did not return any departures!".format(stop_id))
+                    data["Departure"] = []
             if not self.data_sources == "departures":
                 payload = self._fetch_url(stop_id, url("arrivalBoard"))
-                data["Arrival"] = payload["Arrival"]
+                if "Arrival" in payload:
+                    data["Arrival"] = payload["Arrival"]
+                else:
+                    log("Stop {stop_id} did not return any arrivals!".format(stop_id))
+                    data["Arrival"] = []
 
         return data
 
