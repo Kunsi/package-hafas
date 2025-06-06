@@ -10,7 +10,7 @@ COLOUR_MAPPING = {
 API_MAPPING = {
     "rmv": "https://www.rmv.de/hapi/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
     "vbb": "https://fahrinfo.vbb.de/restproxy/2.32/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
-    "vbb-test": "https://vbb.demo.hafas.de/fahrinfo/restproxy/2.32/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
+    "vbb-test": "https://vbb-demo.demo2.hafas.cloud/api/fahrinfo/latest/{endpoint}?id={stop}&duration={minutes}&format=json&accessId={key}",
 }
 
 CATEGORY_MAPPING = {
