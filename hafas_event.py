@@ -64,18 +64,19 @@ class HAFASEvent:
         if key not in self.json:
             return None
         else:
-            for possible_match in (
-                "^(" + REMOVE + "[, -]+)",
-                "( *\(" + REMOVE + "\))",
-                "(" + REMOVE + " +)",
-            ):
-                if re.search(possible_match, self.json[key].strip()):
-                    return re.sub(
-                        possible_match,
-                        "",
-                        self.json[key].strip(),
-                        flags=re.IGNORECASE,
-                    ).strip()
+            if CONFIG["remove_string"].strip():
+                for possible_match in (
+                    "^(" + REMOVE + "[, -]+)",
+                    "( *\(" + REMOVE + "\))",
+                    "(" + REMOVE + " +)",
+                ):
+                    if re.search(possible_match, self.json[key].strip()):
+                        return re.sub(
+                            possible_match,
+                            "",
+                            self.json[key].strip(),
+                            flags=re.IGNORECASE,
+                        ).strip()
             return self.json[key].strip()
 
     @property
