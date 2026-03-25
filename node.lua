@@ -108,6 +108,7 @@ local function draw(real_width, real_height)
             end
 
             local time = dep.time
+            local time_colour = CONFIG.time_colour
             local time_font = CONFIG.time_font
 
             local remaining = math.floor((dep.timestamp - now) / 60)
@@ -123,35 +124,47 @@ local function draw(real_width, real_height)
                preposition = "an"
             end
 
-            if remaining < 0 then
-                time = "In der Vergangenheit"
-                if dep.next_timestamp > 10 then
-                    append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
+            if dep.delay >= 0 then
+                time_font = CONFIG.realtime_font
+                time_colour = CONFIG.realtime_punctual_colour
+                if dep.delay > 0 then
+                    time_colour = CONFIG.realtime_delayed_colour
                 end
-            elseif remaining < 1 then
-                if now % 2 < 1 then
-                    time = "*jetzt"
-                else
-                    time = "jetzt*"
-                end
-                if dep.next_timestamp > 10 then
-                    append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
-                end
-            elseif remaining < (11 + CONFIG.offset) then
-                time = string.format("in %d min", ((dep.timestamp - now)/60))
-                if remaining < (1 + CONFIG.offset) then
+
+                if remaining < 0 then
+                    time = "In der Vergangenheit"
+                    if dep.next_timestamp > 10 then
+                        append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
+                    end
+                elseif remaining < 1 then
                     if now % 2 < 1 then
-                        time = "*" .. time
+                        time = "*jetzt"
                     else
-                        time = time .. "*"
+                        time = "jetzt*"
+                    end
+                    if dep.next_timestamp > 10 then
+                        append = string.format("und in %d min", math.floor((dep.next_timestamp - now)/60))
+                    end
+                elseif remaining < (11 + CONFIG.offset) then
+                    time = string.format("in %d min", ((dep.timestamp - now)/60))
+                    if remaining < (1 + CONFIG.offset) then
+                        if now % 2 < 1 then
+                            time = "*" .. time
+                        else
+                            time = time .. "*"
+                        end
+                    end
+                    if dep.next_timestamp > 10 then
+                        append = "und danach in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
+                    end
+                else
+                    if dep.next_time and dep.next_timestamp > 10 then
+                        append = "und wieder " .. dep.next_time
                     end
                 end
-                if dep.next_timestamp > 10 then
-                    append = "und danach in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
-                end
             else
-                if dep.next_time and dep.next_timestamp > 10 then
-                    append = "und wieder " .. dep.next_time
+                if dep.next_timestamp > 10 then
+                    append = "in " .. math.floor((dep.next_timestamp - dep.timestamp)/60) .. " min"
                 end
             end
 
@@ -173,13 +186,7 @@ local function draw(real_width, real_height)
                 ifr,ifg,ifb = dep.font_colour.r, dep.font_colour.g, dep.font_colour.b
             end
 
-            local time_colour = CONFIG.time_colour
             if dep.delay >= 0 then
-               time_font = CONFIG.realtime_font
-               time_colour = CONFIG.realtime_punctual_colour
-               if dep.delay > 0 then
-                  time_colour = CONFIG.realtime_delayed_colour
-               end
             end
             local tr, tg, tb = time_colour.r, time_colour.g, time_colour.b
 
