@@ -13,9 +13,10 @@
         "type": "select",
         "default": "vbb-test",
         "options": [
+            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"],
+            ["saarvv", "SaarVV (Der Saarländische Verkehrsverbund)"],
             ["vbb", "VBB Produktivsystem (Verkehrsverbund Berlin-Brandenburg)"],
-            ["vbb-test", "VBB Testsystem (Verkehrsverbund Berlin-Brandenburg)"],
-            ["rmv", "RMV (Rhein-Main-Verkehrsverbund)"]
+            ["vbb-test", "VBB Testsystem (Verkehrsverbund Berlin-Brandenburg)"]
         ]
     }, {
         "title": "API-Key oder Cache-URL",
