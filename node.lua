@@ -40,11 +40,13 @@ local function scrolling_text(id, x1, y1, x2, y2, text, font, r, g, b, a)
         font:write(x1, y1, text, font_size, r, g, b, a)
         return
     end
+    -- we want to scroll the full width of the scrolling area in 30 seconds.
+    scroll_per_second = (x2 - x1) / 30
     if not scroll_position[id] then
         -- start all the way to the right
         scroll_position[id] = sys.now()
     end
-    local scroll_position_by_time = math.floor((sys.now() - scroll_position[id])*25)
+    local scroll_position_by_time = math.floor((sys.now() - scroll_position[id])*scroll_per_second)
     if x1 - text_width > x2 - scroll_position_by_time then
         -- text scrolled out to the left. restart at the right then.
         scroll_position[id] = sys.now()
