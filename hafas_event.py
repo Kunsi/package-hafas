@@ -81,7 +81,10 @@ class HAFASEvent:
 
     @property
     def destination(self):
-        return self._clean("direction")
+        dest = self._clean("direction")
+        if CONFIG["uppercase_destination"]:
+            dest = dest.upper()
+        return dest
 
     @property
     def origin(self):

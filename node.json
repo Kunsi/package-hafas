@@ -158,24 +158,31 @@
         "hint": "Filter out any transport where destination matches (matched after 'remove string from destination' - regex possible)"
     }, {
         "title": "Show vehicle type",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "show_vehicle_type",
         "type": "boolean",
         "default": true
     }, {
         "title": "Large Minutes",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "large_minutes",
         "type": "boolean",
         "default": true,
         "hint": "Show 'in X minutes' in large font on the right, instead of small print in the info line"
     }, {
         "title": "Coloured Line Numbers",
-        "ui_width": 4,
+        "ui_width": 3,
         "name": "coloured_lines",
         "type": "boolean",
         "default": true,
         "hint": "if deselected, lines will appear as grey box with white text"
+    }, {
+        "title": "Uppercase Destination",
+        "ui_width": 3,
+        "name": "uppercase_destination",
+        "type": "boolean",
+        "default": false,
+        "hint": "Convert destinations to UPPERCASE letters"
     }, {
         "title": "Hours to request",
         "ui_width": 4,
