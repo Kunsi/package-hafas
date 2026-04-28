@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+from csv import DictReader
+from sys import argv, exit
+
+if len(argv) < 3:
+    print(f'Usage: {argv[0]} /path/to/line-colors.csv operator-name')
+    print('Get the CSV from here: https://github.com/Traewelling/line-colors/blob/main/line-colors.csv')
+    exit(1)
+
+with open(argv[1], newline='') as f:
+    csv = DictReader(f)
+
+    mapping = {}
+    for row in csv:
+        if row['shortOperatorName'] != argv[2]:
+            continue
+
+        textColor = row['textColor'].lower()[1:]
+        backgroundColor = row['backgroundColor'].lower()[1:]
+
+        text = 'Helper.hex2rgb("{}")'.format(textColor)
+        bg = 'Helper.hex2rgb("{}")'.format(backgroundColor)
+
+        if textColor == "ffffff":
+            text = "(1,1,1)"
+        elif textColor == "000000":
+            text = "(0,0,0)"
+
+        if backgroundColor == "ffffff":
+            bg = "(1,1,1)"
+        elif backgroundColor == "000000":
+            bg = "(0,0,0)"
+
+        mapping[row['lineName']] = f'({bg}, {text})'
+
+if mapping:
+    print(f"""
+    "{argv[2]}": {{""", end='')
+
+    for line, colour in sorted(mapping.items()):
+        print(f"""
+        "{line}": {colour},""", end='')
+
+    print("""
+    },""")
+

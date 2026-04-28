@@ -6,3 +6,4 @@ config.json
 *.swp
 #*.ttf
 *.TTF
+line-colors.csv
