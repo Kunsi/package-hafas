@@ -8,7 +8,7 @@ from pytz import timezone, utc
 
 from hafas_fetcher import HAFASFetcher
 from helper import Helper, log
-from hosted import CONFIG, DEVICE, NODE
+from hosted import CONFIG, NODE
 
 CONFIG.restart_on_update()
 

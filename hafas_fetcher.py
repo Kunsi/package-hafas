@@ -89,12 +89,14 @@ class HAFASFetcher:
                     log("Stop {} did not return any arrivals!".format(stop_id))
                     data["Arrival"] = []
         else:
-            url = lambda ep: API_MAPPING[CONFIG["api_provider"]].format(
-                endpoint=ep,
-                stop=stop_id,
-                minutes=CONFIG["request_hours"] * 60,
-                key=key,
-            )
+
+            def url(ep):
+                return API_MAPPING[CONFIG["api_provider"]].format(
+                    endpoint=ep,
+                    stop=stop_id,
+                    minutes=CONFIG["request_hours"] * 60,
+                    key=key,
+                )
 
             if not self.data_sources == "arrivals":
                 payload = self._fetch_url(stop_id, url("departureBoard"))
@@ -185,5 +187,5 @@ class HAFASFetcher:
             }
             departure.update(dep.line_colour)
             out.append(departure)
-        with file("events.json", "wb") as f:
+        with open("events.json", "wb") as f:
             f.write(json.dumps(out, ensure_ascii=False).encode("utf8"))

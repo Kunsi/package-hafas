@@ -31,8 +31,6 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-VERSION = "1.9"
-
 import ctypes
 import errno
 import hashlib
@@ -53,6 +51,8 @@ from tempfile import NamedTemporaryFile
 import pyinotify
 import Queue
 import requests
+
+VERSION = "1.9"
 
 types = {}
 
@@ -255,7 +255,7 @@ class InfoBeamerQuery(object):
                     self._conn.close()
                 if self._sock:
                     self._sock.close()
-            except:
+            except Exception:
                 pass
         self._conn = None
         self._sock = None
@@ -457,7 +457,7 @@ class Configuration(object):
         def parse_recursive(options, config, target):
             # print 'parsing', config
             for option in options:
-                if not "name" in option:
+                if "name" not in option:
                     continue
                 if option["type"] == "list":
                     items = []
@@ -536,7 +536,7 @@ class RPC(object):
             if self._con:
                 try:
                     self._con.close()
-                except:
+                except Exception:
                     pass
             self._con = None
 
@@ -549,7 +549,7 @@ class RPC(object):
             con.write(line + "\n")
             con.flush()
             return True
-        except:
+        except Exception:
             self._close_connection()
             return False
 
@@ -558,7 +558,7 @@ class RPC(object):
             con = self._get_connection()
         try:
             return con.readline()
-        except:
+        except Exception:
             self._close_connection()
 
     def _listen_thread(self):
@@ -576,7 +576,7 @@ class RPC(object):
                     callback(*args)
                 else:
                     log("callback '%s' not found" % (method,))
-            except:
+            except Exception:
                 traceback.print_exc()
 
     def register(self, name, fn):
@@ -616,7 +616,7 @@ class Cache(object):
                 if now > stat.st_mtime + max_age:
                     return False
             return True
-        except:
+        except Exception:
             return False
 
     def get(self, key, max_age=None):
@@ -628,7 +628,7 @@ class Cache(object):
                     if now > stat.st_mtime + max_age:
                         return None
                 return f.read()
-        except:
+        except Exception:
             return None
 
     def get_json(self, key, max_age=None):
@@ -663,7 +663,7 @@ class Cache(object):
             try:
                 log("pruning %s" % fname)
                 os.unlink(fname)
-            except:
+            except Exception:
                 pass
 
     def clear(self):
@@ -741,7 +741,7 @@ class Node(object):
         f = NamedTemporaryFile(prefix=".hosted-py-tmp", dir=os.getcwd())
         try:
             f.write(content)
-        except:
+        except Exception:
             traceback.print_exc()
             f.close()
             raise
@@ -804,7 +804,7 @@ class Node(object):
             )
             try:
                 generator(f)
-            except:
+            except Exception:
                 raise
             else:
                 f.delete = False
@@ -814,7 +814,7 @@ class Node(object):
         if os.path.exists(filename):
             try:
                 os.unlink(filename)
-            except:
+            except Exception:
                 pass
         os.symlink(cached, filename)
 
@@ -831,7 +831,7 @@ class APIProxy(object):
     @property
     def url(self):
         index = self._apis.get_api_index()
-        if not self._api_name in index:
+        if self._api_name not in index:
             raise APIError("api '%s' not available" % (self._api_name,))
         return index[self._api_name]["url"]
 
@@ -850,7 +850,7 @@ class APIProxy(object):
             return r.content
 
     def add_default_args(self, kwargs):
-        if not "timeout" in kwargs:
+        if "timeout" not in kwargs:
             kwargs["timeout"] = 10
         return kwargs
 
@@ -974,7 +974,7 @@ class HostedAPI(object):
                         params=dict(on_device_token=self._on_device_token),
                         timeout=5,
                     )
-                except:
+                except Exception:
                     return None
                 self._api_key = r["api_key"]
                 self._uses = r["uses"]
@@ -983,7 +983,7 @@ class HostedAPI(object):
             return self._api_key
 
     def add_default_args(self, kwargs):
-        if not "timeout" in kwargs:
+        if "timeout" not in kwargs:
             kwargs["timeout"] = 10
         return kwargs
 
@@ -1217,7 +1217,7 @@ class ProofOfPlay(object):
         self._prefix = os.path.join(os.environ["SCRATCH"], dirname)
         try:
             os.makedirs(self._prefix)
-        except:
+        except Exception:
             pass
 
         pop_info = self._api.pop.get()
@@ -1331,7 +1331,7 @@ class ProofOfPlay(object):
                     submit += self._max_delay  # extend deadline
                 else:
                     reopen = True
-            except Exception as err:
+            except Exception:
                 log("[pop] error writing pop log line")
             if lines >= self._max_lines:
                 reopen = True

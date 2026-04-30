@@ -3,7 +3,7 @@
 import logging
 from json import JSONDecodeError, dump, load
 from os.path import abspath, dirname, join
-from sys import exit, stderr, stdout
+from sys import exit, stdout
 from time import sleep
 
 from requests import get
